@@ -10,6 +10,8 @@ import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 
 public class TeleportHandler {
 
@@ -51,6 +53,9 @@ public class TeleportHandler {
 
 			// Decrease use
 			decreaseUse(item, player);
+			
+			// Play effects
+			//player.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 100, 1));
 		}
 	}
 
