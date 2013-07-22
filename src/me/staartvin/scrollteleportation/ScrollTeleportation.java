@@ -8,6 +8,14 @@ import me.staartvin.scrollteleportation.teleporthandler.TeleportHandler;
 
 import org.bukkit.plugin.java.JavaPlugin;
 
+/**
+ * This is the official plugin 'Scroll Teleportation'. This code is written by Staartvin himself
+ * and this code is 'all rights reserved'. You may not copy any code from this plugin without his
+ * permission. 
+ * 
+ * @author Staartvin
+ * 
+ */
 public class ScrollTeleportation extends JavaPlugin {
 
 	private MainConfig config = new MainConfig(this);
