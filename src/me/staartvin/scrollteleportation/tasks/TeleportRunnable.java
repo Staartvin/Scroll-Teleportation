@@ -13,6 +13,7 @@ public class TeleportRunnable implements Runnable {
 	private Player player;
 	private ScrollTeleportation plugin;
 
+	// This has to be run in sync because it teleports a player. Async will cause problems.
 	public TeleportRunnable(ScrollTeleportation instance, Location location,
 			ItemStack item, Player player) {
 		plugin = instance;
