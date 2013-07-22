@@ -214,29 +214,22 @@ public class MainConfig {
 		}
 		
 		// Set scroll name
-		config.set("Scrolls." + scroll + ".name", scrollName);
+		setName(scroll, scrollName);
 
 		// Set destination
-		config.set("Scrolls." + scroll + ".destination", destination.getWorld()
-				.getName()
-				+ ", "
-				+ destination.getBlockX()
-				+ ", "
-				+ destination.getBlockY() 
-				+ ", "
-				+ destination.getBlockZ());
+		setDestination(scroll, destination);
 
 		// Set delay
-		config.set("Scrolls." + scroll + ".delay", delay);
+		setDelay(scroll, delay);
 
 		// Set destination hidden
-		config.set("Scrolls." + scroll + ".destination hidden", false);
+		setDestinationHidden(scroll, false);
 
 		// Set cancel on move true
-		config.set("Scrolls." + scroll + ".cancel on move", true);
+		setCancelOnMove(scroll, true);
 
 		// Set uses
-		config.set("Scrolls." + scroll + ".uses", uses);
+		setUses(scroll, uses);
 
 		// Set effects
 		config.set("Scrolls." + scroll + ".effects", Arrays.asList());
@@ -258,5 +251,48 @@ public class MainConfig {
 		plugin.saveConfig();
 		
 		return true;
+	}
+	
+	public void setName(String scroll, String name) {
+		config.set("Scrolls." + scroll + ".name", name);
+		
+		plugin.saveConfig();
+	}
+	
+	public void setDelay(String scroll, int delay) {
+		config.set("Scrolls." + scroll + ".delay", delay);
+		
+		plugin.saveConfig();
+	}
+	
+	public void setUses(String scroll, int uses) {
+		config.set("Scrolls." + scroll + ".uses", uses);
+		
+		plugin.saveConfig();
+	}
+	
+	public void setDestinationHidden(String scroll, boolean status) {
+		config.set("Scrolls." + scroll + ".destination hidden", status);
+		
+		plugin.saveConfig();
+	}
+	
+	public void setCancelOnMove(String scroll, boolean status) {
+		config.set("Scrolls." + scroll + ".cancel on move", status);
+		
+		plugin.saveConfig();
+	}
+	
+	public void setDestination(String scroll, Location location) {
+		config.set("Scrolls." + scroll + ".destination", location.getWorld()
+				.getName()
+				+ ", "
+				+ location.getBlockX()
+				+ ", "
+				+ location.getBlockY() 
+				+ ", "
+				+ location.getBlockZ());
+		
+		plugin.saveConfig();
 	}
 }
