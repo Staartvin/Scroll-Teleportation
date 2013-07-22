@@ -46,7 +46,7 @@ public class MainConfig {
 
 		// General information
 		config.addDefault("Scroll.scrollItemID", 339);
-		
+
 		// Create an example scroll
 		config.addDefault("Scrolls.ExampleScroll.name",
 				"Scroll of Mysteriousness");
@@ -66,7 +66,8 @@ public class MainConfig {
 		config.addDefault("Scrolls.ExampleScroll.delay", 5);
 		config.addDefault("Scrolls.ExampleScroll.cancel on move", true);
 		config.addDefault("Scrolls.ExampleScroll.uses", 1);
-		config.addDefault("Scrolls.ExampleScroll.effects", Arrays.asList("BLINDNESS 10", "POISON 2"));
+		config.addDefault("Scrolls.ExampleScroll.effects",
+				Arrays.asList("BLINDNESS 10", "POISON 2"));
 
 		config.options().copyDefaults(true);
 		plugin.saveConfig();
@@ -196,12 +197,66 @@ public class MainConfig {
 		plugin.saveConfig();
 		loadConfiguration();
 	}
-	
+
 	public int getScrollItemId() {
 		return config.getInt("Scroll.scrollItemID", 399);
 	}
-	
+
 	public List<String> getEffects(String scroll) {
 		return config.getStringList("Scrolls." + scroll + ".effects");
+	}
+
+	public boolean createNewScroll(String scroll, String scrollName,
+			Location destination, int delay, int uses) {
+		
+		if (config.getString("Scrolls." + scroll + ".name") != null) {
+			return false;
+		}
+		
+		// Set scroll name
+		config.set("Scrolls." + scroll + ".name", scrollName);
+
+		// Set destination
+		config.set("Scrolls." + scroll + ".destination", destination.getWorld()
+				.getName()
+				+ ", "
+				+ destination.getBlockX()
+				+ ", "
+				+ destination.getBlockY() 
+				+ ", "
+				+ destination.getBlockZ());
+
+		// Set delay
+		config.set("Scrolls." + scroll + ".delay", delay);
+
+		// Set destination hidden
+		config.set("Scrolls." + scroll + ".destination hidden", false);
+
+		// Set cancel on move true
+		config.set("Scrolls." + scroll + ".cancel on move", true);
+
+		// Set uses
+		config.set("Scrolls." + scroll + ".uses", uses);
+
+		// Set effects
+		config.set("Scrolls." + scroll + ".effects", Arrays.asList());
+
+		// Set lore
+		config.set("Scrolls." + scroll + ".lores.lore1",
+				"§3This mighty and rare scroll");
+
+		// Set lore
+		config.set("Scrolls." + scroll + ".lores.lore2", "§3will teleport you");
+
+		// Set lore
+		config.set("Scrolls." + scroll + ".lores.lore3", "");
+		
+		// Set lore
+		config.set("Scrolls." + scroll + ".lores.lore4", "");
+
+		// Save
+		plugin.saveConfig();
+		
+		return true;
 	}
 }
