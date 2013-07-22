@@ -56,6 +56,11 @@ public class TeleportHandler {
 
 	public void decreaseUse(ItemStack item, Player player) {
 
+		// Player can bypass uses so no 'use' is used.
+		if (player.hasPermission("scrollteleportation.usesbypass")) {
+			return;
+		}
+		
 		ItemMeta im = item.getItemMeta();
 		List<String> lore = im.getLore();
 		// Get last lore line
