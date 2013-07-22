@@ -122,6 +122,10 @@ public class TeleportHandler {
 	}
 	
 	public void applyEffects(Player player, String scroll) throws PotionEffectInvalidException {
+		
+		// Player does not get potion effects
+		if (player.hasPermission("scrollteleportation.potioneffectbypass")) return;
+		
 		List<String> effects = plugin.getMainConfig().getEffects(scroll);
 		
 		for (String effect: effects) {
