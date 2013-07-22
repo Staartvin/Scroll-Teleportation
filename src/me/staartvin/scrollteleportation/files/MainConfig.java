@@ -1,6 +1,7 @@
 package me.staartvin.scrollteleportation.files;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 
@@ -32,7 +33,9 @@ public class MainConfig {
 						+ "\nWhen 'destination hidden' is true, the scroll will show 'unknown' as destination"
 						+ "\nDelay is time (in seconds) before a player is teleported."
 						+ "\nWhen 'cancel on move' is true, the teleportation of a scroll will be cancelled on move."
-						+ "\nUses is the amount of uses a scroll have before it becomes thin air.");
+						+ "\nUses is the amount of uses a scroll have before it becomes thin air."
+						+ "\nEffects are effects that are played when the scroll is used. (The number is the duration in seconds)"
+						+ "\nThis is a list of effects you can use: http://jd.bukkit.org/rb/doxygen/d3/d70/classorg_1_1bukkit_1_1potion_1_1PotionEffectType.html");
 
 		// Messages
 		config.addDefault("Messages.cast message",
@@ -63,6 +66,7 @@ public class MainConfig {
 		config.addDefault("Scrolls.ExampleScroll.delay", 5);
 		config.addDefault("Scrolls.ExampleScroll.cancel on move", true);
 		config.addDefault("Scrolls.ExampleScroll.uses", 1);
+		config.addDefault("Scrolls.ExampleScroll.effects", Arrays.asList("BLINDNESS 10", "POISON 2"));
 
 		config.options().copyDefaults(true);
 		plugin.saveConfig();
@@ -195,5 +199,9 @@ public class MainConfig {
 	
 	public int getScrollItemId() {
 		return config.getInt("Scroll.scrollItemID", 399);
+	}
+	
+	public List<String> getEffects(String scroll) {
+		return config.getStringList("Scrolls." + scroll + ".effects");
 	}
 }
