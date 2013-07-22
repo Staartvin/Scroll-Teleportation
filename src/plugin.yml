@@ -20,6 +20,9 @@ permissions:
     scrollteleportation.usesbypass:
         description: Players with this permission can bypass uses.
         default: op    
+    scrollteleportation.potioneffectbypass:
+        description: Players with this permission can bypass potioneffects.
+        default: op  
 commands:
     scroll:
       description: Global command of Scroll Teleportation
