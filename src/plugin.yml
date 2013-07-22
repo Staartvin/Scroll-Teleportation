@@ -1,0 +1,24 @@
+name: Scroll Teleportation
+author: Staartvin
+website: http://dev.bukkit.org/server-mods/scroll-teleportation/
+main: me.staartvin.scrollteleportation.ScrollTeleportation
+version: 1.1
+description: A cool RPG-like teleportation method with scrolls.
+permissions:
+    scrollteleportation.teleport:
+        description: Allows a player to use scrolls
+        default: op
+    scrollteleportation.give:
+        description: Allows a player to give scrolls
+        default: op
+    scrollteleportation.walkbypass:
+        description: Players with this permission can walk while teleports are being casted
+        default: op
+    scrollteleportation.delaybypass:
+        description: Players with this permission can bypass delays.
+        default: op
+commands:
+    scroll:
+      description: Global command of Scroll Teleportation
+      usage: /<command>
+      aliases: [st, scrollteleportation, scrolls]
