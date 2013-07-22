@@ -52,6 +52,8 @@ public class CommandHandler implements CommandExecutor {
 			}
 		} else if (args[0].equalsIgnoreCase("reload")) {
 			return new ReloadCommand(plugin).onCommand(sender, cmd, label, args);
+		} else if (args[0].equalsIgnoreCase("create")) {
+			return new CreateCommand(plugin).onCommand(sender, cmd, label, args);
 		}
 		
 		sender.sendMessage(ChatColor.RED + "Command not recognised!");
@@ -73,6 +75,8 @@ public class CommandHandler implements CommandExecutor {
 					+ ChatColor.BLUE + " --- Shows a list of commands");
 			sender.sendMessage(ChatColor.GOLD + "/scroll reload"
 					+ ChatColor.BLUE + " --- Reload Scroll Teleportation");
+			sender.sendMessage(ChatColor.GOLD + "/scroll create <scroll> <displayName> <delay> <uses>"
+					+ ChatColor.BLUE + " --- Create a new scroll with a <delay>, <uses> and a destination at your location");
 			sender.sendMessage(ChatColor.GOLD + "Page " + ChatColor.BLUE + "1 "
 					+ ChatColor.GOLD + "of " + ChatColor.BLUE + maximumPages);
 		} else {
@@ -87,6 +91,8 @@ public class CommandHandler implements CommandExecutor {
 					+ ChatColor.BLUE + " --- Shows a list of commands");
 			sender.sendMessage(ChatColor.GOLD + "/scroll reload"
 					+ ChatColor.BLUE + " --- Reload Scroll Teleportation");
+			sender.sendMessage(ChatColor.GOLD + "/scroll create <scroll> <displayName> <delay> <uses>"
+					+ ChatColor.BLUE + " --- Create a new scroll with a <delay>, <uses> and a destination at your location");
 			sender.sendMessage(ChatColor.GOLD + "Page " + ChatColor.BLUE + "1 "
 					+ ChatColor.GOLD + "of " + ChatColor.BLUE + maximumPages);
 		}
