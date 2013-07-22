@@ -17,6 +17,9 @@ permissions:
     scrollteleportation.delaybypass:
         description: Players with this permission can bypass delays.
         default: op
+    scrollteleportation.usesbypass:
+        description: Players with this permission can bypass uses.
+        default: op    
 commands:
     scroll:
       description: Global command of Scroll Teleportation
