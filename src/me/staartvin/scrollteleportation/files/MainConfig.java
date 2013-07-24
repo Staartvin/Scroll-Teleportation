@@ -6,10 +6,8 @@ import java.util.List;
 import java.util.Set;
 
 import me.staartvin.scrollteleportation.ScrollTeleportation;
-import me.staartvin.scrollteleportation.exceptions.DestinationInvalidException;
 
 import org.bukkit.Location;
-import org.bukkit.World;
 import org.bukkit.configuration.file.FileConfiguration;
 
 public class MainConfig {
@@ -35,7 +33,17 @@ public class MainConfig {
 						+ "\nWhen 'cancel on move' is true, the teleportation of a scroll will be cancelled on move."
 						+ "\nUses is the amount of uses a scroll have before it becomes thin air."
 						+ "\nEffects are effects that are played when the scroll is used. (The number is the duration in seconds)"
-						+ "\nThis is a list of effects you can use: http://jd.bukkit.org/rb/doxygen/d3/d70/classorg_1_1bukkit_1_1potion_1_1PotionEffectType.html");
+						+ "\nThis is a list of effects you can use: http://jd.bukkit.org/rb/doxygen/d3/d70/classorg_1_1bukkit_1_1potion_1_1PotionEffectType.html"
+						+ "\n\nDestinations can be defined in multiple ways:"
+						+ "\n	1. Fixed point (eg: 'world,x,y,z')"
+						+ "\n	2. Random point (eg: 'random(world)')"
+						+ "\n		This takes a world to get random coordinates on. If you leave the world out, a random world will be selected"
+						+ "\n 		Be careful with this one. This can cause much lag as it will try to teleport a player to unloaded chunks."
+						+ "\n	3. Random point with radius (eg: 'random_radius(point=world,x,y,z radius=1000)')"
+						+ "\n		This will put a player in a random location within a radius of the point"
+						+ "\n	4. Fixed name (eg: 'spawn, world')"
+						+ "\n		world is the world that you want the spawn of");
+		
 
 		// Messages
 		config.addDefault("Messages.cast message",
@@ -61,13 +69,38 @@ public class MainConfig {
 				"§7Rare scroll, Unknown location");
 		config.addDefault("Scrolls.ExampleScroll.lores.lore6", "");
 		config.addDefault("Scrolls.ExampleScroll.destination",
-				"world_nether, 100, 100, 100");
+				"world, 100, 100, 100");
 		config.addDefault("Scrolls.ExampleScroll.destination hidden", false);
 		config.addDefault("Scrolls.ExampleScroll.delay", 5);
 		config.addDefault("Scrolls.ExampleScroll.cancel on move", true);
 		config.addDefault("Scrolls.ExampleScroll.uses", 1);
 		config.addDefault("Scrolls.ExampleScroll.effects",
 				Arrays.asList("BLINDNESS 10", "POISON 2"));
+
+		// Create another example scroll
+		config.addDefault("Scrolls.Scroll_of_unforeseen_travel.name",
+				"Scroll of Unforseen Travel");
+		config.addDefault("Scrolls.Scroll_of_unforeseen_travel.lores.lore1",
+				"§3This scroll is a one of its kind");
+		config.addDefault("Scrolls.Scroll_of_unforeseen_travel.lores.lore2",
+				"§3and is very rare. It will allow");
+		config.addDefault("Scrolls.Scroll_of_unforeseen_travel.lores.lore3",
+				"§3you to travel to an unpredictable");
+		config.addDefault("Scrolls.Scroll_of_unforeseen_travel.lores.lore4",
+				"§3destination.");
+		config.addDefault("Scrolls.Scroll_of_unforeseen_travel.lores.lore5",
+				"");
+		config.addDefault("Scrolls.Scroll_of_unforeseen_travel.lores.lore6",
+				"§7Very rare scroll, Unpredictable destination");
+		config.addDefault("Scrolls.Scroll_of_unforeseen_travel.lores.lore7", "");
+		config.addDefault("Scrolls.Scroll_of_unforeseen_travel.destination",
+				"random_radius(point=world,1,1,1 radius=4000)");
+		config.addDefault("Scrolls.Scroll_of_unforeseen_travel.destination hidden", true);
+		config.addDefault("Scrolls.Scroll_of_unforeseen_travel.delay", 5);
+		config.addDefault("Scrolls.Scroll_of_unforeseen_travel.cancel on move", true);
+		config.addDefault("Scrolls.Scroll_of_unforeseen_travel.uses", 5);
+		config.addDefault("Scrolls.Scroll_of_unforeseen_travel.effects",
+				Arrays.asList("CONFUSION 10"));
 
 		config.options().copyDefaults(true);
 		plugin.saveConfig();
@@ -81,35 +114,10 @@ public class MainConfig {
 		return config.getString("Messages.teleport message");
 	}
 
-	public Location getDestination(String scroll)
-			throws DestinationInvalidException {
+	public String getDestination(String scroll) {
 		String location = config
 				.getString("Scrolls." + scroll + ".destination");
-		String[] args = location.split(",");
-
-		if (args.length != 4) {
-			throw new DestinationInvalidException(
-					"More or less than 4 arguments defined in config!");
-		}
-
-		String x, y, z, world;
-
-		world = args[0].trim();
-		x = args[1].trim();
-		y = args[2].trim();
-		z = args[3].trim();
-
-		World realWorld = plugin.getServer().getWorld(world);
-
-		if (realWorld == null) {
-			throw new DestinationInvalidException("World '" + world
-					+ "' does not exist!");
-		}
-
-		Location realLocation = new Location(realWorld, Integer.parseInt(x),
-				Integer.parseInt(y), Integer.parseInt(z));
-
-		return realLocation;
+		return location;
 	}
 
 	public String getScroll(String scrollName) {
@@ -208,11 +216,11 @@ public class MainConfig {
 
 	public boolean createNewScroll(String scroll, String scrollName,
 			Location destination, int delay, int uses) {
-		
+
 		if (config.getString("Scrolls." + scroll + ".name") != null) {
 			return false;
 		}
-		
+
 		// Set scroll name
 		setName(scroll, scrollName);
 
@@ -243,56 +251,53 @@ public class MainConfig {
 
 		// Set lore
 		config.set("Scrolls." + scroll + ".lores.lore3", "");
-		
+
 		// Set lore
 		config.set("Scrolls." + scroll + ".lores.lore4", "");
 
 		// Save
 		plugin.saveConfig();
-		
+
 		return true;
 	}
-	
+
 	public void setName(String scroll, String name) {
 		config.set("Scrolls." + scroll + ".name", name);
-		
+
 		plugin.saveConfig();
 	}
-	
+
 	public void setDelay(String scroll, int delay) {
 		config.set("Scrolls." + scroll + ".delay", delay);
-		
+
 		plugin.saveConfig();
 	}
-	
+
 	public void setUses(String scroll, int uses) {
 		config.set("Scrolls." + scroll + ".uses", uses);
-		
+
 		plugin.saveConfig();
 	}
-	
+
 	public void setDestinationHidden(String scroll, boolean status) {
 		config.set("Scrolls." + scroll + ".destination hidden", status);
-		
+
 		plugin.saveConfig();
 	}
-	
+
 	public void setCancelOnMove(String scroll, boolean status) {
 		config.set("Scrolls." + scroll + ".cancel on move", status);
-		
+
 		plugin.saveConfig();
 	}
-	
+
 	public void setDestination(String scroll, Location location) {
-		config.set("Scrolls." + scroll + ".destination", location.getWorld()
-				.getName()
-				+ ", "
-				+ location.getBlockX()
-				+ ", "
-				+ location.getBlockY() 
-				+ ", "
-				+ location.getBlockZ());
-		
+		config.set(
+				"Scrolls." + scroll + ".destination",
+				location.getWorld().getName() + ", " + location.getBlockX()
+						+ ", " + location.getBlockY() + ", "
+						+ location.getBlockZ());
+
 		plugin.saveConfig();
 	}
 }
