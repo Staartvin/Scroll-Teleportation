@@ -22,7 +22,16 @@ permissions:
         default: op    
     scrollteleportation.potioneffectbypass:
         description: Players with this permission can bypass potioneffects.
-        default: op  
+        default: op
+    scrollteleportation.set:
+        description: Allows a player to set a variable
+        default: op
+    scrollteleportation.create:
+        description: Allows a player to create scrolls
+        default: op
+    scrollteleportation.reload:
+        description: Allows a player to reload config files
+        default: op          
 commands:
     scroll:
       description: Global command of Scroll Teleportation
