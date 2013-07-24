@@ -4,6 +4,7 @@ import me.staartvin.scrollteleportation.commands.CommandHandler;
 import me.staartvin.scrollteleportation.files.MainConfig;
 import me.staartvin.scrollteleportation.listeners.PlayerInteractListener;
 import me.staartvin.scrollteleportation.listeners.PlayerMoveListener;
+import me.staartvin.scrollteleportation.teleporthandler.DestinationHandler;
 import me.staartvin.scrollteleportation.teleporthandler.TeleportHandler;
 
 import org.bukkit.plugin.java.JavaPlugin;
@@ -20,6 +21,7 @@ public class ScrollTeleportation extends JavaPlugin {
 
 	private MainConfig config = new MainConfig(this);
 	private TeleportHandler teleHandler = new TeleportHandler(this);
+	private DestinationHandler desHandler = new DestinationHandler(this);
 	
 	public void onEnable() {
 		// Load configuration file
@@ -68,5 +70,9 @@ public class ScrollTeleportation extends JavaPlugin {
 				.replace("§7", "").replace("§8", "").replace("§9", "")
 				.replace("§a", "").replace("§b", "").replace("§c", "")
 				.replace("§d", "").replace("§e", "").replace("§f", "");
+	}
+	
+	public DestinationHandler getDestinationHandler() {
+		return desHandler;
 	}
 }
