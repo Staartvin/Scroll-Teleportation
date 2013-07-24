@@ -1,7 +1,6 @@
 package me.staartvin.scrollteleportation.listeners;
 
 import me.staartvin.scrollteleportation.ScrollTeleportation;
-import me.staartvin.scrollteleportation.exceptions.DestinationInvalidException;
 import me.staartvin.scrollteleportation.tasks.TeleportRunnable;
 
 import org.bukkit.ChatColor;
@@ -67,11 +66,8 @@ public class PlayerInteractListener implements Listener {
 		}
 		Location destination = null;
 
-		try {
-			destination = plugin.getMainConfig().getDestination(scroll);
-		} catch (DestinationInvalidException e) {
-			e.printStackTrace();
-		}
+		destination = plugin.getDestinationHandler().createLocation(plugin.getMainConfig().getDestination(scroll), player);
+		
 		if (destination == null) {
 			player.sendMessage(ChatColor.RED
 					+ "Destination could not be found!");
@@ -80,14 +76,16 @@ public class PlayerInteractListener implements Listener {
 
 		int delay = plugin.getMainConfig().getDelay(scroll);
 
-		// Inform player that he is going to be teleported.
-		player.sendMessage(plugin.getMainConfig().getCastMessage()
-				.replace("%time%", delay + ""));
-
+		if (!player.hasPermission("scrollteleportation.delaybypass")) {
+			// Inform player that he is going to be teleported.
+			player.sendMessage(plugin.getMainConfig().getCastMessage()
+					.replace("%time%", delay + ""));
+		}
+		
 		// Set player ready to be teleported
 		plugin.getTeleportHandler().setReady(player.getName(), true);
 		
-		if (plugin.getMainConfig().doCancelOnMove(scroll)) {
+		if (plugin.getMainConfig().doCancelOnMove(scroll) && !player.hasPermission("scrollteleportationt.walkbypass")) {
 			// Send warning
 			player.sendMessage(plugin.getMainConfig().getMoveWarningMessage());	
 		}
@@ -104,7 +102,5 @@ public class PlayerInteractListener implements Listener {
 			// Teleport instantly
 			plugin.getTeleportHandler().teleport(player, destination, item);
 		}
-		
-
 	}
 }
