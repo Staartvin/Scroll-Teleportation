@@ -7,6 +7,7 @@ import java.util.Set;
 
 import me.staartvin.scrollteleportation.ScrollTeleportation;
 
+import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.configuration.file.FileConfiguration;
 
@@ -47,10 +48,10 @@ public class MainConfig {
 
 		// Messages
 		config.addDefault("Messages.cast message",
-				"§6Teleporting in %time% seconds..");
+				"&6Teleporting in %time% seconds..");
 		config.addDefault("Messages.move warning",
-				"§4Don't move or teleportation is cancelled.");
-		config.addDefault("Messages.teleport message", "§6Commencing teleport!");
+				"&4Don't move or teleportation is cancelled.");
+		config.addDefault("Messages.teleport message", "&6Commencing teleport!");
 
 		// General information
 		config.addDefault("Scroll.scrollItemID", 339);
@@ -59,14 +60,14 @@ public class MainConfig {
 		config.addDefault("Scrolls.ExampleScroll.name",
 				"Scroll of Mysteriousness");
 		config.addDefault("Scrolls.ExampleScroll.lores.lore1",
-				"§3This mighty and rare scroll");
+				"&3This mighty and rare scroll");
 		config.addDefault("Scrolls.ExampleScroll.lores.lore2",
-				"§3will teleport you to");
+				"&3will teleport you to");
 		config.addDefault("Scrolls.ExampleScroll.lores.lore3",
-				"§3a place never visited by humans.");
+				"&3a place never visited by humans.");
 		config.addDefault("Scrolls.ExampleScroll.lores.lore4", "");
 		config.addDefault("Scrolls.ExampleScroll.lores.lore5",
-				"§7Rare scroll, Unknown location");
+				"&7Rare scroll, Unknown location");
 		config.addDefault("Scrolls.ExampleScroll.lores.lore6", "");
 		config.addDefault("Scrolls.ExampleScroll.destination",
 				"world, 100, 100, 100");
@@ -81,17 +82,17 @@ public class MainConfig {
 		config.addDefault("Scrolls.Scroll_of_unforeseen_travel.name",
 				"Scroll of Unforseen Travel");
 		config.addDefault("Scrolls.Scroll_of_unforeseen_travel.lores.lore1",
-				"§3This scroll is a one of its kind");
+				"&3This scroll is a one of its kind");
 		config.addDefault("Scrolls.Scroll_of_unforeseen_travel.lores.lore2",
-				"§3and is very rare. It will allow");
+				"&3and is very rare. It will allow");
 		config.addDefault("Scrolls.Scroll_of_unforeseen_travel.lores.lore3",
-				"§3you to travel to an unpredictable");
+				"&3you to travel to an unpredictable");
 		config.addDefault("Scrolls.Scroll_of_unforeseen_travel.lores.lore4",
-				"§3destination.");
+				"&3destination.");
 		config.addDefault("Scrolls.Scroll_of_unforeseen_travel.lores.lore5",
 				"");
 		config.addDefault("Scrolls.Scroll_of_unforeseen_travel.lores.lore6",
-				"§7Very rare scroll, Unpredictable destination");
+				"&7Very rare scroll, Unpredictable destination");
 		config.addDefault("Scrolls.Scroll_of_unforeseen_travel.lores.lore7", "");
 		config.addDefault("Scrolls.Scroll_of_unforeseen_travel.destination",
 				"random_radius(point=world,1,1,1 radius=4000)");
@@ -107,11 +108,11 @@ public class MainConfig {
 	}
 
 	public String getCastMessage() {
-		return config.getString("Messages.cast message");
+		return addColourCode(config.getString("Messages.cast message"));
 	}
 
 	public String getTeleportMessage() {
-		return config.getString("Messages.teleport message");
+		return addColourCode(config.getString("Messages.teleport message"));
 	}
 
 	public String getDestination(String scroll) {
@@ -133,7 +134,7 @@ public class MainConfig {
 	}
 
 	public String getScrollName(String scroll) {
-		return config.getString("Scrolls." + scroll + ".name");
+		return addColourCode(config.getString("Scrolls." + scroll + ".name"));
 	}
 
 	public int getDelay(String scroll) {
@@ -150,7 +151,7 @@ public class MainConfig {
 				"Scrolls." + scroll + ".lores").getKeys(false);
 
 		for (String lore : realLores) {
-			lores.add(lore);
+			lores.add(addColourCode(lore));
 		}
 
 		return lores;
@@ -193,7 +194,7 @@ public class MainConfig {
 	}
 
 	public String getLoreLine(String scroll, String lore) {
-		return config.getString("Scrolls." + scroll + ".lores." + lore);
+		return addColourCode(config.getString("Scrolls." + scroll + ".lores." + lore));
 	}
 
 	public int getTotalUses(String scroll) {
@@ -244,10 +245,10 @@ public class MainConfig {
 
 		// Set lore
 		config.set("Scrolls." + scroll + ".lores.lore1",
-				"§3This mighty and rare scroll");
+				"&3This mighty and rare scroll");
 
 		// Set lore
-		config.set("Scrolls." + scroll + ".lores.lore2", "§3will teleport you");
+		config.set("Scrolls." + scroll + ".lores.lore2", "&3will teleport you");
 
 		// Set lore
 		config.set("Scrolls." + scroll + ".lores.lore3", "");
@@ -299,5 +300,9 @@ public class MainConfig {
 						+ location.getBlockZ());
 
 		plugin.saveConfig();
+	}
+	
+	public String addColourCode(String oldString) {
+		return ChatColor.translateAlternateColorCodes('&', oldString);
 	}
 }
