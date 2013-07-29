@@ -142,7 +142,7 @@ public class MainConfig {
 	}
 
 	public String getMoveWarningMessage() {
-		return config.getString("Messages.move warning");
+		return addColourCode(config.getString("Messages.move warning"));
 	}
 
 	public List<String> getLores(String scroll) {
