@@ -1,6 +1,7 @@
 package me.staartvin.scrollteleportation.teleporthandler;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import me.staartvin.scrollteleportation.ScrollTeleportation;
@@ -18,7 +19,8 @@ public class TeleportHandler {
 
 	private ScrollTeleportation plugin;
 	List<String> readyToBeTeleported = new ArrayList<String>();
-
+	public HashMap<String, Integer> taskID = new HashMap<String, Integer>();
+	
 	public TeleportHandler(ScrollTeleportation instance) {
 		plugin = instance;
 	}
