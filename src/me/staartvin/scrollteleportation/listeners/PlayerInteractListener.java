@@ -13,6 +13,7 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.scheduler.BukkitTask;
 
 public class PlayerInteractListener implements Listener {
 
@@ -27,80 +28,106 @@ public class PlayerInteractListener implements Listener {
 		Player player = event.getPlayer();
 		ItemStack item = event.getItem();
 
+		if (plugin.getTeleportHandler().isReady(player.getName())) {
+
+			if (player.hasPermission("scrollteleportation.walkbypass"))
+				return;
+
+			// Player has moved so teleportation is cancelled
+			plugin.getTeleportHandler().setReady(player.getName(), false);
+
+			if (plugin.getTeleportHandler().taskID.get(player.getName()) != null) {
+				// Cancel teleport task
+				plugin.getServer().getScheduler().cancelTask(plugin.getTeleportHandler().taskID.get(player.getName()));
+				
+				// Set taskID null
+				plugin.getTeleportHandler().taskID.put(player.getName(), null);
+			}
+			
+			// Inform player
+			player.sendMessage(ChatColor.RED
+					+ "Teleportation is cancelled because you interacted.");
+		}
+		
 		// Did the player right click
-		if (!event.getAction().equals(Action.RIGHT_CLICK_AIR)
-				&& !event.getAction().equals(Action.RIGHT_CLICK_BLOCK))
-			return;
+		if (event.getAction().equals(Action.RIGHT_CLICK_AIR)
+				|| event.getAction().equals(Action.RIGHT_CLICK_BLOCK)) {
+			
+			// Is there an item in the player's hand
+			if (item == null)
+				return;
 
+			// Is the item in hand a paper
+			if (!item.getType().equals(Material.getMaterial(plugin.getMainConfig().getScrollItemId())))
+				return;
+			
+			// If item doesn't have item meta it can never be a scroll
+			if (!item.hasItemMeta())
+				return;
+			
+			ItemMeta im = item.getItemMeta();
 
-		// Is there an item in the player's hand
-		if (item == null)
-			return;
+			// Does the scroll have a name
+			if (!im.hasDisplayName())
+				return;
 
-		// Is the item in hand a paper
-		if (!item.getType().equals(Material.getMaterial(plugin.getMainConfig().getScrollItemId())))
-			return;
-		
-		// If item doesn't have item meta it can never be a scroll
-		if (!item.hasItemMeta())
-			return;
-		
-		ItemMeta im = item.getItemMeta();
+			// Change displayname
+			im.setDisplayName(plugin.fixName(im.getDisplayName()));
+			// Is there a scroll defined in the config with this name?
+			if (plugin.getMainConfig().getScroll(im.getDisplayName()) == null)
+				return;
 
-		// Does the scroll have a name
-		if (!im.hasDisplayName())
-			return;
+			String scroll = plugin.getMainConfig().getScroll(im.getDisplayName());
 
-		// Change displayname
-		im.setDisplayName(plugin.fixName(im.getDisplayName()));
-		// Is there a scroll defined in the config with this name?
-		if (plugin.getMainConfig().getScroll(im.getDisplayName()) == null)
-			return;
+			if (!player.hasPermission("scrollteleportation.teleport")) {
+				player.sendMessage(ChatColor.RED
+						+ "You are not allowed to use scrolls!");
+				return;
+			}
+			Location destination = null;
 
-		String scroll = plugin.getMainConfig().getScroll(im.getDisplayName());
+			destination = plugin.getDestinationHandler().createLocation(plugin.getMainConfig().getDestination(scroll), player);
+			
+			if (destination == null) {
+				player.sendMessage(ChatColor.RED
+						+ "Destination could not be found!");
+				return;
+			}
 
-		if (!player.hasPermission("scrollteleportation.teleport")) {
-			player.sendMessage(ChatColor.RED
-					+ "You are not allowed to use scrolls!");
-			return;
-		}
-		Location destination = null;
+			int delay = plugin.getMainConfig().getDelay(scroll);
 
-		destination = plugin.getDestinationHandler().createLocation(plugin.getMainConfig().getDestination(scroll), player);
-		
-		if (destination == null) {
-			player.sendMessage(ChatColor.RED
-					+ "Destination could not be found!");
-			return;
-		}
+			if (!player.hasPermission("scrollteleportation.delaybypass")) {
+				// Inform player that he is going to be teleported.
+				player.sendMessage(plugin.getMainConfig().getCastMessage()
+						.replace("%time%", delay + ""));
+			}
+			
+			// Set player ready to be teleported
+			plugin.getTeleportHandler().setReady(player.getName(), true);
+			
+			if (plugin.getMainConfig().doCancelOnMove(scroll) && !player.hasPermission("scrollteleportationt.walkbypass")) {
+				// Send warning
+				player.sendMessage(plugin.getMainConfig().getMoveWarningMessage());	
+			}
 
-		int delay = plugin.getMainConfig().getDelay(scroll);
-
-		if (!player.hasPermission("scrollteleportation.delaybypass")) {
-			// Inform player that he is going to be teleported.
-			player.sendMessage(plugin.getMainConfig().getCastMessage()
-					.replace("%time%", delay + ""));
-		}
-		
-		// Set player ready to be teleported
-		plugin.getTeleportHandler().setReady(player.getName(), true);
-		
-		if (plugin.getMainConfig().doCancelOnMove(scroll) && !player.hasPermission("scrollteleportationt.walkbypass")) {
-			// Send warning
-			player.sendMessage(plugin.getMainConfig().getMoveWarningMessage());	
-		}
-
-		if (!player.hasPermission("scrollteleportation.delaybypass")) {
-			// Teleport after delay
-			plugin.getServer()
-					.getScheduler()
-					.runTaskLater(
-							plugin,
-							new TeleportRunnable(plugin, destination, item, player),
-							delay * 20);
-		} else {
-			// Teleport instantly
-			plugin.getTeleportHandler().teleport(player, destination, item);
-		}
+			
+			if (!player.hasPermission("scrollteleportation.delaybypass")) {
+				// Teleport after delay
+				
+				BukkitTask task = plugin.getServer()
+				.getScheduler()
+				.runTaskLater(
+						plugin,
+						new TeleportRunnable(plugin, destination, item, player),
+						delay * 20);
+				
+				// Save taskID
+				plugin.getTeleportHandler().taskID.put(player.getName(), task.getTaskId());
+				
+			} else {
+				// Teleport instantly
+				plugin.getTeleportHandler().teleport(player, destination, item);
+			}
+		} 		
 	}
 }

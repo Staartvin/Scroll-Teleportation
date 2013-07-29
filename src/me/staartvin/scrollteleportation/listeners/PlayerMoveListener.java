@@ -41,6 +41,14 @@ public class PlayerMoveListener implements Listener {
 			// Player has moved so teleportation is cancelled
 			plugin.getTeleportHandler().setReady(player.getName(), false);
 
+			if (plugin.getTeleportHandler().taskID.get(player.getName()) != null) {
+				// Cancel teleport task
+				plugin.getServer().getScheduler().cancelTask(plugin.getTeleportHandler().taskID.get(player.getName()));
+				
+				// Set taskID null
+				plugin.getTeleportHandler().taskID.put(player.getName(), null);
+			}
+			
 			// Inform player
 			player.sendMessage(ChatColor.RED
 					+ "Teleportation is cancelled because you moved.");
