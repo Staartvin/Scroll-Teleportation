@@ -1,6 +1,7 @@
 package me.staartvin.scrollteleportation.commands;
 
 import me.staartvin.scrollteleportation.ScrollTeleportation;
+
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;

@@ -90,14 +90,16 @@ public class DestinationHandler {
 			throws DestinationInvalidException {
 
 		String[] words = location.split(",");
-		if (location.contains(",") && !location.contains("random") && words.length == 2) {
+		if (location.contains(",") && !location.contains("random")
+				&& words.length == 2) {
 			return destinationPoint.FIXED_NAME;
 		} else if (!location.contains(",") && location.contains("random")) {
 			return destinationPoint.RANDOM;
 		} else if (location.contains(",") && location.contains("(")
 				&& location.contains(")") && location.contains("random_radius")) {
 			return destinationPoint.RANDOM_RADIUS;
-		} else if (location.contains(",") && !location.contains("random") && words.length == 4) {
+		} else if (location.contains(",") && !location.contains("random")
+				&& words.length == 4) {
 			return destinationPoint.FIXED_LOCATION;
 		} else {
 			throw new DestinationInvalidException(
@@ -182,10 +184,10 @@ public class DestinationHandler {
 			z = z - (z * 2);
 		}
 
-		
 		String worldName = location.replaceAll(".*\\(|\\).*", "");
 		// No world given. Select random world
-		if (worldName.trim().isEmpty() || !location.contains("(") || !location.contains(")")) {
+		if (worldName.trim().isEmpty() || !location.contains("(")
+				|| !location.contains(")")) {
 			List<World> worlds = plugin.getServer().getWorlds();
 
 			int randomWorld = getRandomNumberRange(0, (worlds.size() - 1));
@@ -213,7 +215,6 @@ public class DestinationHandler {
 		int xOffSet, yOffSet, zOffSet;
 		Location pointLocation;
 		World world;
-
 
 		String point, radiusString;
 
@@ -260,7 +261,7 @@ public class DestinationHandler {
 			throw new DestinationInvalidException("World '" + pointInfo[0]
 					+ "' for '" + location + "' does not exist!");
 		}
-		
+
 		world = plugin.getServer().getWorld(pointInfo[0]);
 
 		pointLocation = new Location(world, Integer.parseInt(pointInfo[1]),
@@ -269,41 +270,51 @@ public class DestinationHandler {
 		// All points are calculated.
 		int xLowest = pointLocation.getBlockX() - radius;
 		int xBiggest = pointLocation.getBlockX() + radius;
-		
+
 		int xDifference = xBiggest - xLowest;
-		
+
 		int zLowest = pointLocation.getBlockZ() - radius;
 		int zBiggest = pointLocation.getBlockZ() + radius;
-		
+
 		int zDifference = zBiggest - zLowest;
-		
-		
-		xOffSet = getRandomNumberRange(0,
-				(xDifference - 1));
+
+		xOffSet = getRandomNumberRange(0, (xDifference - 1));
 		yOffSet = getRandomNumberRange(1, 250);
-		zOffSet = getRandomNumberRange(0,
-				(zDifference - 1));
-		
+		zOffSet = getRandomNumberRange(0, (zDifference - 1));
+
 		int x = xLowest + xOffSet, y = yOffSet, z = zLowest + zOffSet;
-		
+
 		return new Location(world, x, y, z);
 	}
-	
+
 	private Location secureLocation(Location oldLocation, Player player) {
+
 		World world = oldLocation.getWorld();
-		int x = oldLocation.getBlockX(),y = oldLocation.getBlockY(), z = oldLocation.getBlockZ();
-		
+		int x = oldLocation.getBlockX(), y = oldLocation.getBlockY(), z = oldLocation
+				.getBlockZ();
+
 		// Block for feet
 		Block blockOnY = world.getBlockAt(x, y, z);
 		// Block for head
 		Block blockOnY2 = world.getBlockAt(x, (y + 1), z);
 		// Block below feet
 		Block blockOnY3 = world.getBlockAt(x, (y - 1), z);
-		
-		
+
 		Location safeLocation = null;
+
+		// Load chunk before teleporting
+		if (plugin.getMainConfig().doLoadChunk()) {
+			if (!oldLocation.getChunk().isLoaded()) {
+				// If chunk is not loaded -> load chunk
+
+				oldLocation.getChunk().load();
+			}
+		}
+
 		// Player would suffocate or fall down
-		if (!blockOnY.getType().equals(Material.AIR) || !blockOnY2.getType().equals(Material.AIR) || blockOnY3.getType().equals(Material.AIR)) {
+		if (!blockOnY.getType().equals(Material.AIR)
+				|| !blockOnY2.getType().equals(Material.AIR)
+				|| blockOnY3.getType().equals(Material.AIR)) {
 			int safeY = oldLocation.getWorld().getHighestBlockYAt(x, z);
 			safeLocation = new Location(world, x, safeY, z);
 		} else {

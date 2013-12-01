@@ -55,6 +55,8 @@ public class MainConfig {
 
 		// General information
 		config.addDefault("Scroll.scrollItemID", 339);
+		
+		config.addDefault("Scroll.load-chunk-on-teleport", false);
 
 		// Create an example scroll
 		config.addDefault("Scrolls.ExampleScroll.name",
@@ -80,7 +82,7 @@ public class MainConfig {
 
 		// Create another example scroll
 		config.addDefault("Scrolls.Scroll_of_unforeseen_travel.name",
-				"Scroll of Unforseen Travel");
+				"Scroll of Unforeseen Travel");
 		config.addDefault("Scrolls.Scroll_of_unforeseen_travel.lores.lore1",
 				"&3This scroll is a one of its kind");
 		config.addDefault("Scrolls.Scroll_of_unforeseen_travel.lores.lore2",
@@ -304,5 +306,9 @@ public class MainConfig {
 	
 	public String addColourCode(String oldString) {
 		return ChatColor.translateAlternateColorCodes('&', oldString);
+	}
+	
+	public boolean doLoadChunk() {
+		return config.getBoolean("Scroll.load-chunk-on-teleport");
 	}
 }

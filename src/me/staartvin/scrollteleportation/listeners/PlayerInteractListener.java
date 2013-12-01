@@ -23,6 +23,7 @@ public class PlayerInteractListener implements Listener {
 		plugin = instance;
 	}
 
+	@SuppressWarnings("deprecation")
 	@EventHandler
 	public void onItemClick(PlayerInteractEvent event) {
 		Player player = event.getPlayer();
