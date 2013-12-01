@@ -24,8 +24,6 @@ public class ScrollTeleportation extends JavaPlugin {
 	private TeleportHandler teleHandler = new TeleportHandler(this);
 	private DestinationHandler desHandler = new DestinationHandler(this);
 	
-	// Test push
-	
 	public void onEnable() {
 		// Load configuration file
 		config.loadConfiguration();
