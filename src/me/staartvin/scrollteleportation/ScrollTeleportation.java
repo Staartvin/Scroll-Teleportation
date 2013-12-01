@@ -3,6 +3,7 @@ package me.staartvin.scrollteleportation;
 import me.staartvin.scrollteleportation.commands.CommandHandler;
 import me.staartvin.scrollteleportation.files.MainConfig;
 import me.staartvin.scrollteleportation.listeners.PlayerInteractListener;
+import me.staartvin.scrollteleportation.listeners.PlayerInvOpenListener;
 import me.staartvin.scrollteleportation.listeners.PlayerMoveListener;
 import me.staartvin.scrollteleportation.teleporthandler.DestinationHandler;
 import me.staartvin.scrollteleportation.teleporthandler.TeleportHandler;
@@ -47,6 +48,7 @@ public class ScrollTeleportation extends JavaPlugin {
 	private void registerListeners() {
 		getServer().getPluginManager().registerEvents(new PlayerInteractListener(this), this);
 		getServer().getPluginManager().registerEvents(new PlayerMoveListener(this), this);
+		getServer().getPluginManager().registerEvents(new PlayerInvOpenListener(this), this);
 	}
 	
 	public MainConfig getMainConfig() {

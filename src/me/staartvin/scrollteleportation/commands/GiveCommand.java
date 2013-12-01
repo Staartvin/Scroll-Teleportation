@@ -95,6 +95,7 @@ public class GiveCommand {
 	}
 
 	public void giveScroll(String scroll, Player player) {
+		@SuppressWarnings("deprecation")
 		ItemStack item = new ItemStack(plugin.getMainConfig().getScrollItemId(), 1);
 
 		ItemMeta im = item.getItemMeta();

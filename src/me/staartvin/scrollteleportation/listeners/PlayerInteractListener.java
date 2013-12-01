@@ -25,7 +25,7 @@ public class PlayerInteractListener implements Listener {
 
 	@SuppressWarnings("deprecation")
 	@EventHandler
-	public void onItemClick(PlayerInteractEvent event) {
+	public void onInteract(PlayerInteractEvent event) {
 		Player player = event.getPlayer();
 		ItemStack item = event.getItem();
 
@@ -51,8 +51,8 @@ public class PlayerInteractListener implements Listener {
 		}
 		
 		// Did the player right click
-		if (event.getAction().equals(Action.RIGHT_CLICK_AIR)
-				|| event.getAction().equals(Action.RIGHT_CLICK_BLOCK)) {
+		else if (event.getAction().equals(Action.RIGHT_CLICK_AIR)
+				/*|| event.getAction().equals(Action.RIGHT_CLICK_BLOCK)*/) {
 			
 			// Is there an item in the player's hand
 			if (item == null)
