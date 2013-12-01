@@ -2,7 +2,7 @@ name: Scroll Teleportation
 author: Staartvin
 website: http://dev.bukkit.org/server-mods/scroll-teleportation/
 main: me.staartvin.scrollteleportation.ScrollTeleportation
-version: 1.2.1
+version: 1.3
 description: A cool RPG-like teleportation method with scrolls.
 permissions:
     scrollteleportation.teleport:
