@@ -210,7 +210,7 @@ public class MainConfig {
 	}
 
 	public int getScrollItemId() {
-		return config.getInt("Scroll.scrollItemID", 399);
+		return config.getInt("Scroll.scrollItemID", 339);
 	}
 
 	public List<String> getEffects(String scroll) {
