@@ -16,6 +16,7 @@ public class PlayerMoveListener implements Listener {
 		plugin = instance;
 	}
 
+	@SuppressWarnings("deprecation")
 	@EventHandler
 	public void onPlayerMove(PlayerMoveEvent event) {
 		Player player = event.getPlayer();
