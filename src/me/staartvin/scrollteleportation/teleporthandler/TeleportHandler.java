@@ -91,14 +91,16 @@ public class TeleportHandler {
 		// Trim string
 		uses = uses.trim();
 
-		// Get uses
-		int realUses = Integer.parseInt(uses);
+		// Get uses - if infinite, set it to -1.
+		int realUses = uses.equalsIgnoreCase("infinite") ? -1 : Integer.parseInt(uses);
 
 		if (realUses == 1) {
 			// Remove item because it was last use
 			player.getInventory().remove(item);
 			
 			return;
+		} else if (realUses < 0) {
+			// Do nothing, as it is infinitely many times used.
 		} else {
 			
 			// Remove it first, then give it back

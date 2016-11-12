@@ -199,8 +199,15 @@ public class MainConfig {
 		return addColourCode(config.getString("Scrolls." + scroll + ".lores." + lore));
 	}
 
-	public int getTotalUses(String scroll) {
-		return config.getInt("Scrolls." + scroll + ".uses", 1);
+	public String getTotalUses(String scroll) {
+		int uses = config.getInt("Scrolls." + scroll + ".uses", 1);
+		
+		// Infinite uses
+		if (uses < 0) {
+			return "infinite";
+		}
+		
+		return uses + "";
 	}
 
 	public void reload() {

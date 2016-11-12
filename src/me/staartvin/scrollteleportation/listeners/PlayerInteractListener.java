@@ -34,26 +34,45 @@ public class PlayerInteractListener implements Listener {
 			if (player.hasPermission("scrollteleportation.walkbypass"))
 				return;
 
+			// When clicking a chest, don't count it as a click.
+			if (event.getAction() == Action.RIGHT_CLICK_BLOCK) {
+				Material clickedBlock = event.getClickedBlock().getType();
+				if (clickedBlock == Material.CHEST || clickedBlock == Material.ENDER_CHEST
+						|| clickedBlock == Material.TRAPPED_CHEST)
+					return;
+			}
+			
+			System.out.println("CLICKED: " + event.getAction());
+			System.out.println("clicked block: " + event.getClickedBlock());
+
 			// Player has moved so teleportation is cancelled
 			plugin.getTeleportHandler().setReady(player.getName(), false);
 
 			if (plugin.getTeleportHandler().taskID.get(player.getName()) != null) {
 				// Cancel teleport task
 				plugin.getServer().getScheduler().cancelTask(plugin.getTeleportHandler().taskID.get(player.getName()));
-				
+
 				// Set taskID null
 				plugin.getTeleportHandler().taskID.put(player.getName(), null);
 			}
-			
+
 			// Inform player
-			player.sendMessage(ChatColor.RED
-					+ "Teleportation is cancelled because you interacted.");
+			player.sendMessage(ChatColor.RED + "Teleportation is cancelled because you interacted.");
+			return;
 		}
-		
+
 		// Did the player right click
 		else if (event.getAction().equals(Action.RIGHT_CLICK_AIR)
-				/*|| event.getAction().equals(Action.RIGHT_CLICK_BLOCK)*/) {
-			
+				|| event.getAction().equals(Action.RIGHT_CLICK_BLOCK)) {
+
+			// When clicking a chest, don't count it as a click.
+			if (event.getAction() == Action.RIGHT_CLICK_BLOCK) {
+				Material clickedBlock = event.getClickedBlock().getType();
+				if (clickedBlock == Material.CHEST || clickedBlock == Material.ENDER_CHEST
+						|| clickedBlock == Material.TRAPPED_CHEST)
+					return;
+			}
+
 			// Is there an item in the player's hand
 			if (item == null)
 				return;
@@ -61,11 +80,11 @@ public class PlayerInteractListener implements Listener {
 			// Is the item in hand a paper
 			if (!item.getType().equals(Material.getMaterial(plugin.getMainConfig().getScrollItemId())))
 				return;
-			
+
 			// If item doesn't have item meta it can never be a scroll
 			if (!item.hasItemMeta())
 				return;
-			
+
 			ItemMeta im = item.getItemMeta();
 
 			// Does the scroll have a name
@@ -81,17 +100,16 @@ public class PlayerInteractListener implements Listener {
 			String scroll = plugin.getMainConfig().getScroll(im.getDisplayName());
 
 			if (!player.hasPermission("scrollteleportation.teleport")) {
-				player.sendMessage(ChatColor.RED
-						+ "You are not allowed to use scrolls!");
+				player.sendMessage(ChatColor.RED + "You are not allowed to use scrolls!");
 				return;
 			}
 			Location destination = null;
 
-			destination = plugin.getDestinationHandler().createLocation(plugin.getMainConfig().getDestination(scroll), player);
-			
+			destination = plugin.getDestinationHandler().createLocation(plugin.getMainConfig().getDestination(scroll),
+					player);
+
 			if (destination == null) {
-				player.sendMessage(ChatColor.RED
-						+ "Destination could not be found!");
+				player.sendMessage(ChatColor.RED + "Destination could not be found!");
 				return;
 			}
 
@@ -99,36 +117,31 @@ public class PlayerInteractListener implements Listener {
 
 			if (!player.hasPermission("scrollteleportation.delaybypass")) {
 				// Inform player that he is going to be teleported.
-				player.sendMessage(plugin.getMainConfig().getCastMessage()
-						.replace("%time%", delay + ""));
-			}
-			
-			// Set player ready to be teleported
-			plugin.getTeleportHandler().setReady(player.getName(), true);
-			
-			if (plugin.getMainConfig().doCancelOnMove(scroll) && !player.hasPermission("scrollteleportationt.walkbypass")) {
-				// Send warning
-				player.sendMessage(plugin.getMainConfig().getMoveWarningMessage());	
+				player.sendMessage(plugin.getMainConfig().getCastMessage().replace("%time%", delay + ""));
 			}
 
-			
+			// Set player ready to be teleported
+			plugin.getTeleportHandler().setReady(player.getName(), true);
+
+			if (plugin.getMainConfig().doCancelOnMove(scroll)
+					&& !player.hasPermission("scrollteleportationt.walkbypass")) {
+				// Send warning
+				player.sendMessage(plugin.getMainConfig().getMoveWarningMessage());
+			}
+
 			if (!player.hasPermission("scrollteleportation.delaybypass")) {
 				// Teleport after delay
-				
-				BukkitTask task = plugin.getServer()
-				.getScheduler()
-				.runTaskLater(
-						plugin,
-						new TeleportRunnable(plugin, destination, item, player),
-						delay * 20);
-				
+
+				BukkitTask task = plugin.getServer().getScheduler().runTaskLater(plugin,
+						new TeleportRunnable(plugin, destination, item, player), delay * 20);
+
 				// Save taskID
 				plugin.getTeleportHandler().taskID.put(player.getName(), task.getTaskId());
-				
+
 			} else {
 				// Teleport instantly
 				plugin.getTeleportHandler().teleport(player, destination, item);
 			}
-		} 		
+		}
 	}
 }
