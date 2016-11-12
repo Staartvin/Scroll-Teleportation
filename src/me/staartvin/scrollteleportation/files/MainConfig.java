@@ -32,7 +32,7 @@ public class MainConfig {
 						+ "\nWhen 'destination hidden' is true, the scroll will show 'unknown' as destination"
 						+ "\nDelay is time (in seconds) before a player is teleported."
 						+ "\nWhen 'cancel on move' is true, the teleportation of a scroll will be cancelled on move."
-						+ "\nUses is the amount of uses a scroll have before it becomes thin air."
+						+ "\nUses is the amount of uses a scroll have before it becomes thin air. To create scrolls with infinite uses, just set it to -1."
 						+ "\nEffects are effects that are played when the scroll is used. (The number is the duration in seconds)"
 						+ "\nThis is a list of effects you can use: http://jd.bukkit.org/rb/doxygen/d3/d70/classorg_1_1bukkit_1_1potion_1_1PotionEffectType.html"
 						+ "\n\nDestinations can be defined in multiple ways:"

@@ -1,7 +1,7 @@
 package me.staartvin.scrollteleportation.listeners;
 
-import me.staartvin.scrollteleportation.ScrollTeleportation;
-import me.staartvin.scrollteleportation.tasks.TeleportRunnable;
+import java.util.Arrays;
+import java.util.List;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -11,9 +11,13 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.scheduler.BukkitTask;
+
+import me.staartvin.scrollteleportation.ScrollTeleportation;
+import me.staartvin.scrollteleportation.tasks.TeleportRunnable;
 
 public class PlayerInteractListener implements Listener {
 
@@ -21,13 +25,25 @@ public class PlayerInteractListener implements Listener {
 
 	public PlayerInteractListener(ScrollTeleportation instance) {
 		plugin = instance;
+
+		// Create list of ignored blocks
+		ignoredBlocks = Arrays.asList(new Material[] { Material.DISPENSER, Material.CHEST, Material.ENDER_CHEST,
+				Material.TRAPPED_CHEST, Material.DROPPER, Material.FURNACE, Material.WORKBENCH, Material.MINECART,
+				Material.CAULDRON, Material.DARK_OAK_DOOR, Material.ACACIA_DOOR, Material.BIRCH_DOOR,
+				Material.JUNGLE_DOOR, Material.TRAP_DOOR, Material.SPRUCE_DOOR, Material.WOOD_DOOR, Material.WOODEN_DOOR});
 	}
+
+	private List<Material> ignoredBlocks;
 
 	@SuppressWarnings("deprecation")
 	@EventHandler
 	public void onInteract(PlayerInteractEvent event) {
 		Player player = event.getPlayer();
 		ItemStack item = event.getItem();
+
+		// Ignore off hand
+		if (event.getHand() == EquipmentSlot.OFF_HAND)
+			return;
 
 		if (plugin.getTeleportHandler().isReady(player.getName())) {
 
@@ -41,9 +57,6 @@ public class PlayerInteractListener implements Listener {
 						|| clickedBlock == Material.TRAPPED_CHEST)
 					return;
 			}
-			
-			System.out.println("CLICKED: " + event.getAction());
-			System.out.println("clicked block: " + event.getClickedBlock());
 
 			// Player has moved so teleportation is cancelled
 			plugin.getTeleportHandler().setReady(player.getName(), false);
@@ -65,11 +78,10 @@ public class PlayerInteractListener implements Listener {
 		else if (event.getAction().equals(Action.RIGHT_CLICK_AIR)
 				|| event.getAction().equals(Action.RIGHT_CLICK_BLOCK)) {
 
-			// When clicking a chest, don't count it as a click.
+			// When clicking an ignored block, don't count it as a click.
 			if (event.getAction() == Action.RIGHT_CLICK_BLOCK) {
 				Material clickedBlock = event.getClickedBlock().getType();
-				if (clickedBlock == Material.CHEST || clickedBlock == Material.ENDER_CHEST
-						|| clickedBlock == Material.TRAPPED_CHEST)
+				if (ignoredBlocks.contains(clickedBlock))
 					return;
 			}
 
