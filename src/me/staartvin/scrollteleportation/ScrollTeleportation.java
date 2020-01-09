@@ -5,7 +5,7 @@ import me.staartvin.scrollteleportation.files.MainConfig;
 import me.staartvin.scrollteleportation.listeners.PlayerInteractListener;
 import me.staartvin.scrollteleportation.listeners.PlayerInvOpenListener;
 import me.staartvin.scrollteleportation.listeners.PlayerMoveListener;
-import me.staartvin.scrollteleportation.teleporthandler.DestinationHandler;
+import me.staartvin.scrollteleportation.storage.ScrollStorage;
 import me.staartvin.scrollteleportation.teleporthandler.TeleportHandler;
 
 import org.bukkit.plugin.java.JavaPlugin;
@@ -22,11 +22,13 @@ public class ScrollTeleportation extends JavaPlugin {
 
 	private MainConfig config = new MainConfig(this);
 	private TeleportHandler teleHandler = new TeleportHandler(this);
-	private DestinationHandler desHandler = new DestinationHandler(this);
+	private ScrollStorage scrollStorage = new ScrollStorage(this);
 	
 	public void onEnable() {
 		// Load configuration file
 		config.loadConfiguration();
+
+		scrollStorage.loadScrollsFromConfig();
 		
 		// Register listeners
 		registerListeners();
@@ -58,6 +60,8 @@ public class ScrollTeleportation extends JavaPlugin {
 	public TeleportHandler getTeleportHandler() {
 		return teleHandler;
 	}
+
+	public ScrollStorage getScrollStorage() {return scrollStorage;}
 	
 	/**
 	 * The displayname of an item has colours in it.
@@ -73,8 +77,5 @@ public class ScrollTeleportation extends JavaPlugin {
 				.replace("§a", "").replace("§b", "").replace("§c", "")
 				.replace("§d", "").replace("§e", "").replace("§f", "");
 	}
-	
-	public DestinationHandler getDestinationHandler() {
-		return desHandler;
-	}
+
 }

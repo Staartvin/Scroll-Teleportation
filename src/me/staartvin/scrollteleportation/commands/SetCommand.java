@@ -1,14 +1,14 @@
 package me.staartvin.scrollteleportation.commands;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import me.staartvin.scrollteleportation.ScrollTeleportation;
-
+import me.staartvin.scrollteleportation.storage.Scroll;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class SetCommand {
 
@@ -35,16 +35,17 @@ public class SetCommand {
 					return true;
 				}
 			}
-			
+
 			String variable = args[1];
-			String scroll = plugin.getMainConfig().matchScroll(args[2]);
-			List<String> resultList = new ArrayList<String>();
-			
+			Scroll scroll = plugin.getScrollStorage().getLoadedScroll(args[2]).orElse(null);
+
 			if (scroll == null) {
 				sender.sendMessage(ChatColor.RED + "There is no scroll by that name!");
 				return true;
 			}
-			
+
+			List<String> resultList = new ArrayList<String>();
+
 			// Fill result list
 			for (int i=0;i<args.length;i++) {
 				String argument = args[i];
@@ -59,7 +60,7 @@ public class SetCommand {
 			String result = convertToString(resultList);
 			
 			if (variable.equalsIgnoreCase("name")) {
-				plugin.getMainConfig().setName(scroll, result);
+				plugin.getMainConfig().setName(scroll.getInternalName(), result);
 				
 				sender.sendMessage(ChatColor.GREEN + "Set name of " + scroll + " to " + ChatColor.GOLD + result);
 				return true;
@@ -73,7 +74,7 @@ public class SetCommand {
 					return true;
 				}
 				
-				plugin.getMainConfig().setDelay(scroll, delay);
+				plugin.getMainConfig().setDelay(scroll.getInternalName(), delay);
 				
 				sender.sendMessage(ChatColor.GREEN + "Set delay of " + scroll + " to " + ChatColor.GOLD + result + ChatColor.GREEN + " seconds");
 				return true;
@@ -87,28 +88,28 @@ public class SetCommand {
 					return true;
 				}
 				
-				plugin.getMainConfig().setUses(scroll, uses);
+				plugin.getMainConfig().setUses(scroll.getInternalName(), uses);
 				
 				sender.sendMessage(ChatColor.GREEN + "Set uses of " + scroll + " to " + ChatColor.GOLD + result);
 				return true;
 			} else if (variable.equalsIgnoreCase("destination_hidden")) {
 				if (result.equalsIgnoreCase("true")) {
-					plugin.getMainConfig().setDestinationHidden(scroll, true);
+					plugin.getMainConfig().setDestinationHidden(scroll.getInternalName(), true);
 					
 					sender.sendMessage(ChatColor.GREEN + "Set destination_hidden of " + scroll + " to " + ChatColor.GOLD + "true");
 				} else {
-					plugin.getMainConfig().setDestinationHidden(scroll, false);
+					plugin.getMainConfig().setDestinationHidden(scroll.getInternalName(), false);
 					
 					sender.sendMessage(ChatColor.GREEN + "Set destination_hidden of " + scroll + " to " + ChatColor.GOLD + "false");
 				}
 				return true;
 			} else if (variable.equalsIgnoreCase("cancel_on_move")) {
 				if (result.equalsIgnoreCase("true")) {
-					plugin.getMainConfig().setCancelOnMove(scroll, true);
+					plugin.getMainConfig().setCancelOnMove(scroll.getInternalName(), true);
 					
 					sender.sendMessage(ChatColor.GREEN + "Set cancel_on_move of " + scroll + " to " + ChatColor.GOLD + "true");
 				} else {
-					plugin.getMainConfig().setCancelOnMove(scroll, false);
+					plugin.getMainConfig().setCancelOnMove(scroll.getInternalName(), false);
 					
 					sender.sendMessage(ChatColor.GREEN + "Set cancel_on_move of " + scroll + " to " + ChatColor.GOLD + "false");
 				}
@@ -120,7 +121,7 @@ public class SetCommand {
 				}
 				Player player = (Player) sender;
 				
-				plugin.getMainConfig().setDestination(scroll, player.getLocation());
+				plugin.getMainConfig().setDestination(scroll.getInternalName(), player.getLocation());
 				
 				sender.sendMessage(ChatColor.GREEN + "Set destination of " + scroll + " to " + ChatColor.GOLD + "your location");
 				

@@ -69,14 +69,14 @@ public class CommandHandler implements CommandExecutor {
 			sender.sendMessage(ChatColor.BLUE + "--------------["
 					+ ChatColor.GOLD + "Scroll Teleportation" + ChatColor.BLUE
 					+ "]------------------");
-			sender.sendMessage(ChatColor.GOLD + "/scroll give <scroll> (player)"
-					+ ChatColor.BLUE + " --- Give a scroll to a player");
 			sender.sendMessage(ChatColor.GOLD + "/scroll"
 					+ ChatColor.BLUE + " --- Shows basic information");
 			sender.sendMessage(ChatColor.GOLD + "/scroll help"
 					+ ChatColor.BLUE + " --- Shows a list of commands");
 			sender.sendMessage(ChatColor.GOLD + "/scroll reload"
 					+ ChatColor.BLUE + " --- Reload Scroll Teleportation");
+			sender.sendMessage(ChatColor.GOLD + "/scroll give <scroll> (player)"
+					+ ChatColor.BLUE + " --- Give a scroll to a player");
 			sender.sendMessage(ChatColor.GOLD + "/scroll create <scroll> <displayName> <delay> <uses>"
 					+ ChatColor.BLUE + " --- Create a new scroll with a <delay>, <uses> and a destination at your location");
 			sender.sendMessage(ChatColor.GOLD + "/scroll set <var> <scroll> <result>"
@@ -87,14 +87,14 @@ public class CommandHandler implements CommandExecutor {
 			sender.sendMessage(ChatColor.BLUE + "--------------["
 					+ ChatColor.GOLD + "Scroll Teleportation" + ChatColor.BLUE
 					+ "]------------------");
-			sender.sendMessage(ChatColor.GOLD + "/scroll give <scroll> (player)"
-					+ ChatColor.BLUE + " --- Give a scroll to a player");
 			sender.sendMessage(ChatColor.GOLD + "/scroll"
 					+ ChatColor.BLUE + " --- Shows basic information");
 			sender.sendMessage(ChatColor.GOLD + "/scroll help"
 					+ ChatColor.BLUE + " --- Shows a list of commands");
 			sender.sendMessage(ChatColor.GOLD + "/scroll reload"
 					+ ChatColor.BLUE + " --- Reload Scroll Teleportation");
+			sender.sendMessage(ChatColor.GOLD + "/scroll give <scroll> (player)"
+					+ ChatColor.BLUE + " --- Give a scroll to a player");
 			sender.sendMessage(ChatColor.GOLD + "/scroll create <scroll> <displayName> <delay> <uses>"
 					+ ChatColor.BLUE + " --- Create a new scroll with a <delay>, <uses> and a destination at your location");
 			sender.sendMessage(ChatColor.GOLD + "/scroll set <var> <scroll> <result>"

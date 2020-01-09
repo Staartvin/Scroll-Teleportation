@@ -1,15 +1,18 @@
 package me.staartvin.scrollteleportation.files;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Set;
-
 import me.staartvin.scrollteleportation.ScrollTeleportation;
-
+import me.staartvin.scrollteleportation.exceptions.DestinationInvalidException;
+import me.staartvin.scrollteleportation.storage.Scroll;
+import me.staartvin.scrollteleportation.storage.ScrollDestination;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
+
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class MainConfig {
 
@@ -54,23 +57,22 @@ public class MainConfig {
 		config.addDefault("Messages.teleport message", "&6Commencing teleport!");
 
 		// General information
-		config.addDefault("Scroll.scrollItemID", 339);
+		config.addDefault("Scroll.scrollMaterial", "PAPER");
 		
 		config.addDefault("Scroll.load-chunk-on-teleport", false);
 
 		// Create an example scroll
 		config.addDefault("Scrolls.ExampleScroll.name",
 				"Scroll of Mysteriousness");
-		config.addDefault("Scrolls.ExampleScroll.lores.lore1",
-				"&3This mighty and rare scroll");
-		config.addDefault("Scrolls.ExampleScroll.lores.lore2",
-				"&3will teleport you to");
-		config.addDefault("Scrolls.ExampleScroll.lores.lore3",
-				"&3a place never visited by humans.");
-		config.addDefault("Scrolls.ExampleScroll.lores.lore4", "");
-		config.addDefault("Scrolls.ExampleScroll.lores.lore5",
-				"&7Rare scroll, Unknown location");
-		config.addDefault("Scrolls.ExampleScroll.lores.lore6", "");
+		config.addDefault("Scrolls.ExampleScroll.lores",
+				Arrays.asList(
+						"&3This mighty and rare scroll",
+						"&3will teleport you to",
+						"&3a place never visited by humans.",
+						"",
+						"&7Rare scroll, Unknown location",
+						""
+						));
 		config.addDefault("Scrolls.ExampleScroll.destination",
 				"world, 100, 100, 100");
 		config.addDefault("Scrolls.ExampleScroll.destination hidden", false);
@@ -83,19 +85,15 @@ public class MainConfig {
 		// Create another example scroll
 		config.addDefault("Scrolls.Scroll_of_unforeseen_travel.name",
 				"Scroll of Unforeseen Travel");
-		config.addDefault("Scrolls.Scroll_of_unforeseen_travel.lores.lore1",
-				"&3This scroll is a one of its kind");
-		config.addDefault("Scrolls.Scroll_of_unforeseen_travel.lores.lore2",
-				"&3and is very rare. It will allow");
-		config.addDefault("Scrolls.Scroll_of_unforeseen_travel.lores.lore3",
-				"&3you to travel to an unpredictable");
-		config.addDefault("Scrolls.Scroll_of_unforeseen_travel.lores.lore4",
-				"&3destination.");
-		config.addDefault("Scrolls.Scroll_of_unforeseen_travel.lores.lore5",
-				"");
-		config.addDefault("Scrolls.Scroll_of_unforeseen_travel.lores.lore6",
-				"&7Very rare scroll, Unpredictable destination");
-		config.addDefault("Scrolls.Scroll_of_unforeseen_travel.lores.lore7", "");
+		config.addDefault("Scrolls.Scroll_of_unforeseen_travel.lores",
+				Arrays.asList(
+						"&3This scroll is a one of its kind",
+						"&3and is very rare. It will allow",
+						"&3you to travel to an unpredictable",
+						"&3destination.",
+						"",
+						"&7Very rare scroll, Unpredictable destination"
+				));
 		config.addDefault("Scrolls.Scroll_of_unforeseen_travel.destination",
 				"random_radius(point=world,1,1,1 radius=4000)");
 		config.addDefault("Scrolls.Scroll_of_unforeseen_travel.destination hidden", true);
@@ -117,25 +115,19 @@ public class MainConfig {
 		return addColourCode(config.getString("Messages.teleport message"));
 	}
 
-	public String getDestination(String scroll) {
-		String location = config
-				.getString("Scrolls." + scroll + ".destination");
-		return location;
-	}
-
 	public String getScroll(String scrollName) {
 		Set<String> scrolls = config.getConfigurationSection("Scrolls")
 				.getKeys(false);
 
 		for (String scroll : scrolls) {
-			if (getScrollName(scroll).equalsIgnoreCase(scrollName)) {
+			if (getScrollDisplayName(scroll).equalsIgnoreCase(scrollName)) {
 				return scroll;
 			}
 		}
 		return null;
 	}
 
-	public String getScrollName(String scroll) {
+	public String getScrollDisplayName(String scroll) {
 		return addColourCode(config.getString("Scrolls." + scroll + ".name"));
 	}
 
@@ -147,16 +139,11 @@ public class MainConfig {
 		return addColourCode(config.getString("Messages.move warning"));
 	}
 
-	public List<String> getLores(String scroll) {
+	public List<String> getLoreStrings(String scroll) {
 		List<String> lores = new ArrayList<String>();
-		Set<String> realLores = config.getConfigurationSection(
-				"Scrolls." + scroll + ".lores").getKeys(false);
-
-		for (String lore : realLores) {
-			lores.add(addColourCode(lore));
-		}
-
-		return lores;
+		return config.getStringList(
+				"Scrolls." + scroll + ".lores").stream().map(text -> ChatColor.translateAlternateColorCodes('&',
+				text)).collect(Collectors.toList());
 	}
 
 	public boolean isDestinationHidden(String scroll) {
@@ -167,61 +154,71 @@ public class MainConfig {
 		return config.getBoolean("Scrolls." + scroll + ".cancel on move");
 	}
 
-	public String getStringDestination(String scroll) {
+	public ScrollDestination getScrollDestination(String scroll) {
 		String destination = config.getString("Scrolls." + scroll
-				+ ".destination");
-		String[] arguments = destination.split(",");
-
-		String world, x, y, z;
-
-		world = arguments[0].trim();
-		x = arguments[1].trim();
-		y = arguments[2].trim();
-		z = arguments[3].trim();
-
-		String stringDestination = x + ", " + y + ", " + z + " in " + world;
-		return stringDestination;
-	}
-
-	public String matchScroll(String scroll) {
-		Set<String> scrolls = config.getConfigurationSection("Scrolls")
-				.getKeys(false);
-
-		for (String scrollString : scrolls) {
-			if (scrollString.equalsIgnoreCase(scroll)) {
-				return scrollString;
-			}
+				+ ".destination", "random");
+		try {
+			return ScrollDestination.createFromLocationString(destination);
+		} catch (DestinationInvalidException e) {
+			e.printStackTrace();
 		}
+
 		return null;
 	}
 
-	public String getLoreLine(String scroll, String lore) {
-		return addColourCode(config.getString("Scrolls." + scroll + ".lores." + lore));
-	}
-
-	public String getTotalUses(String scroll) {
+	public int getTotalUses(String scroll) {
 		int uses = config.getInt("Scrolls." + scroll + ".uses", 1);
 		
 		// Infinite uses
 		if (uses < 0) {
-			return "infinite";
+			return Scroll.SCROLL_USES_INFINITE;
 		}
 		
-		return uses + "";
+		return uses;
 	}
 
 	public void reload() {
 		plugin.reloadConfig();
-		plugin.saveConfig();
 		loadConfiguration();
 	}
 
-	public int getScrollItemId() {
-		return config.getInt("Scroll.scrollItemID", 339);
+	public Material getScrollMaterial() {
+		return Material.getMaterial(Objects.requireNonNull(config.getString("Scroll.scrollMaterial", "PAPER")));
 	}
 
-	public List<String> getEffects(String scroll) {
-		return config.getStringList("Scrolls." + scroll + ".effects");
+	public List<PotionEffect> getEffects(String scroll) {
+		List<PotionEffect> effects = new ArrayList<>();
+
+		config.getStringList("Scrolls." + scroll + ".effects").forEach(effectString -> {
+			String[] args = effectString.split(" ");
+
+			if (args.length != 2) {
+				plugin.getLogger().severe("Missing duration argument for '" + effectString + "'!");
+				return;
+			}
+
+			String realEffect = args[0].trim();
+			int duration = 1;
+
+			try {
+				duration = Integer.parseInt(args[1].trim());
+			} catch (Exception e) {
+				plugin.getLogger().severe("Invalid duration for '" + realEffect + "'!");
+				return;
+			}
+
+			PotionEffectType potionEffect = PotionEffectType.getByName(realEffect.toUpperCase().replace(" " , "_"));
+
+			if (potionEffect == null) {
+				plugin.getLogger().severe("PotionEffect '" + realEffect + "' is not a valid effect!");
+				return;
+			}
+
+			effects.add(new PotionEffect(potionEffect, duration * 20, 1));
+
+		});
+
+		return effects;
 	}
 
 	public boolean createNewScroll(String scroll, String scrollName,
@@ -313,6 +310,10 @@ public class MainConfig {
 	
 	public String addColourCode(String oldString) {
 		return ChatColor.translateAlternateColorCodes('&', oldString);
+	}
+
+	public Set<String> getScrollsInConfig() {
+		return config.getConfigurationSection("Scrolls").getKeys(false);
 	}
 	
 	public boolean doLoadChunk() {
