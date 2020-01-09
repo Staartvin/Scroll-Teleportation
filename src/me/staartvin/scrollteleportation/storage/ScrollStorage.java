@@ -67,7 +67,7 @@ public class ScrollStorage {
 
         if (scroll == null) return;
 
-
+        player.getInventory().addItem(scroll.getItemStack());
     }
 
     public Optional<Scroll> getScrollByItemStack(ItemStack stack) {
@@ -80,6 +80,10 @@ public class ScrollStorage {
                 PersistentDataType.STRING);
 
         return this.getLoadedScroll(internalScrollName);
+    }
+
+    public List<Scroll> getLoadedScrolls() {
+        return this.loadedScrolls;
     }
 
 }

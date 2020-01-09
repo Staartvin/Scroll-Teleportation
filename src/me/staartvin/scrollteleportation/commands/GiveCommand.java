@@ -4,11 +4,16 @@ import me.staartvin.scrollteleportation.ScrollTeleportation;
 import me.staartvin.scrollteleportation.storage.Scroll;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
+import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
-public class GiveCommand {
+import java.util.List;
+import java.util.stream.Collectors;
+
+public class GiveCommand implements CommandExecutor, TabCompleter {
 
     private ScrollTeleportation plugin;
 
@@ -66,7 +71,7 @@ public class GiveCommand {
                 return true;
             }
 
-			ItemStack itemStack = scroll.getItemStack();
+            ItemStack itemStack = scroll.getItemStack();
 
             // Add item
             target.getInventory().addItem(itemStack);
@@ -90,4 +95,16 @@ public class GiveCommand {
         return true;
     }
 
+    @Override
+    public List<String> onTabComplete(CommandSender commandSender, Command command, String s, String[] strings) {
+
+        if (strings.length == 2) {
+            return plugin.getScrollStorage().getLoadedScrolls().stream().map(Scroll::getInternalName)
+                    .filter(scrollName -> scrollName.toLowerCase().startsWith(strings[1].toLowerCase())).collect(Collectors.toList());
+        } else if (strings.length == 3) {
+            return plugin.getServer().getOnlinePlayers().stream().map(Player::getDisplayName).collect(Collectors.toList());
+        }
+
+        return null;
+    }
 }

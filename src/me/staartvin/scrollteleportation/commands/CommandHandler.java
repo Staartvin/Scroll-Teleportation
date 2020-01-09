@@ -1,18 +1,31 @@
 package me.staartvin.scrollteleportation.commands;
 
 import me.staartvin.scrollteleportation.ScrollTeleportation;
-
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.command.TabCompleter;
 
-public class CommandHandler implements CommandExecutor {
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
+public class CommandHandler implements CommandExecutor, TabCompleter {
 
 	private ScrollTeleportation plugin;
+
+	private Map<String, CommandExecutor> commands = new HashMap<>();
 	
 	public CommandHandler(ScrollTeleportation instance) {
 		plugin = instance;
+
+		commands.put("give", new GiveCommand(plugin));
+		commands.put("reload", new ReloadCommand(plugin));
+		commands.put("create", new CreateCommand(plugin));
+		commands.put("set", new SetCommand(plugin));
+		commands.put("help", new HelpCommand(plugin));
 	}
 	
 	@Override
@@ -30,77 +43,34 @@ public class CommandHandler implements CommandExecutor {
 			sender.sendMessage(ChatColor.YELLOW
 					+ "Type /scroll help for a list of commands.");
 			return true;
-		} else if (args[0].equalsIgnoreCase("give")) {
-			return new GiveCommand(plugin).onCommand(sender, cmd, label, args);
-		} else if (args[0].equalsIgnoreCase("help")) {
-			if (args.length == 1) {
-				showHelpPage(1, sender);
-				return true;
+		} else {
+			CommandExecutor executor = commands.get(args[0].toLowerCase().trim());
+
+			if (executor != null) {
+				executor.onCommand(sender, cmd, label, args);
 			} else {
-				Integer id = -1;
-
-				try {
-					id = Integer.parseInt(args[1]);
-				} catch (Exception e) {
-					sender.sendMessage(ChatColor.RED
-							+ (args[1] + " is not a valid page number!"));
-					return true;
-				}
-
-				showHelpPage(id, sender);
-				return true;
+				sender.sendMessage(ChatColor.RED + "Command not recognised!");
+				sender.sendMessage(ChatColor.YELLOW + "Type '/scroll help' for a list of commands.");
 			}
-		} else if (args[0].equalsIgnoreCase("reload")) {
-			return new ReloadCommand(plugin).onCommand(sender, cmd, label, args);
-		} else if (args[0].equalsIgnoreCase("create")) {
-			return new CreateCommand(plugin).onCommand(sender, cmd, label, args);
-		} else if (args[0].equalsIgnoreCase("set")) {
-			return new SetCommand(plugin).onCommand(sender, cmd, label, args);
+
+			return true;
 		}
-		
-		sender.sendMessage(ChatColor.RED + "Command not recognised!");
-		sender.sendMessage(ChatColor.YELLOW + "Type '/scroll help' for a list of commands.");
-		return true;
 	}
 
-	private void showHelpPage(int page, CommandSender sender) {
-		int maximumPages = 1;
-		if (page == 1) {
-			sender.sendMessage(ChatColor.BLUE + "--------------["
-					+ ChatColor.GOLD + "Scroll Teleportation" + ChatColor.BLUE
-					+ "]------------------");
-			sender.sendMessage(ChatColor.GOLD + "/scroll"
-					+ ChatColor.BLUE + " --- Shows basic information");
-			sender.sendMessage(ChatColor.GOLD + "/scroll help"
-					+ ChatColor.BLUE + " --- Shows a list of commands");
-			sender.sendMessage(ChatColor.GOLD + "/scroll reload"
-					+ ChatColor.BLUE + " --- Reload Scroll Teleportation");
-			sender.sendMessage(ChatColor.GOLD + "/scroll give <scroll> (player)"
-					+ ChatColor.BLUE + " --- Give a scroll to a player");
-			sender.sendMessage(ChatColor.GOLD + "/scroll create <scroll> <displayName> <delay> <uses>"
-					+ ChatColor.BLUE + " --- Create a new scroll with a <delay>, <uses> and a destination at your location");
-			sender.sendMessage(ChatColor.GOLD + "/scroll set <var> <scroll> <result>"
-					+ ChatColor.BLUE + " --- Set a scroll variable");
-			sender.sendMessage(ChatColor.GOLD + "Page " + ChatColor.BLUE + "1 "
-					+ ChatColor.GOLD + "of " + ChatColor.BLUE + maximumPages);
-		} else {
-			sender.sendMessage(ChatColor.BLUE + "--------------["
-					+ ChatColor.GOLD + "Scroll Teleportation" + ChatColor.BLUE
-					+ "]------------------");
-			sender.sendMessage(ChatColor.GOLD + "/scroll"
-					+ ChatColor.BLUE + " --- Shows basic information");
-			sender.sendMessage(ChatColor.GOLD + "/scroll help"
-					+ ChatColor.BLUE + " --- Shows a list of commands");
-			sender.sendMessage(ChatColor.GOLD + "/scroll reload"
-					+ ChatColor.BLUE + " --- Reload Scroll Teleportation");
-			sender.sendMessage(ChatColor.GOLD + "/scroll give <scroll> (player)"
-					+ ChatColor.BLUE + " --- Give a scroll to a player");
-			sender.sendMessage(ChatColor.GOLD + "/scroll create <scroll> <displayName> <delay> <uses>"
-					+ ChatColor.BLUE + " --- Create a new scroll with a <delay>, <uses> and a destination at your location");
-			sender.sendMessage(ChatColor.GOLD + "/scroll set <var> <scroll> <result>"
-					+ ChatColor.BLUE + " --- Set a scroll variable");
-			sender.sendMessage(ChatColor.GOLD + "Page " + ChatColor.BLUE + "1 "
-					+ ChatColor.GOLD + "of " + ChatColor.BLUE + maximumPages);
+	@Override
+	public List<String> onTabComplete(CommandSender commandSender, Command command, String s, String[] strings) {
+
+		if (strings.length == 1) {
+			return commands.keySet().stream().sorted().collect(Collectors.toList());
+		} else if (strings.length == 2) {
+
+			TabCompleter completer = (TabCompleter) commands.get(strings[0].toLowerCase().trim());
+
+			if (completer != null) {
+				return completer.onTabComplete(commandSender, command, s, strings);
+			}
 		}
+
+		return null;
 	}
 }
