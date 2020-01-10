@@ -147,7 +147,7 @@ public class Scroll {
         lores.add(ChatColor.GREEN + destination);
 
         // Add uses
-        lores.add(ChatColor.GREEN + "Uses: " + this.getUses());
+        lores.add(ChatColor.GREEN + "Uses: " + (this.getUses() < 0 ? "infinite" : this.getUses()));
 
         // Set real lore
         im.setLore(lores);
