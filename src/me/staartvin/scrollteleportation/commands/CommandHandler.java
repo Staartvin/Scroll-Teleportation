@@ -62,7 +62,7 @@ public class CommandHandler implements CommandExecutor, TabCompleter {
 
 		if (strings.length == 1) {
 			return commands.keySet().stream().sorted().collect(Collectors.toList());
-		} else if (strings.length == 2) {
+		} else if (strings.length >= 2) {
 
 			TabCompleter completer = (TabCompleter) commands.get(strings[0].toLowerCase().trim());
 
