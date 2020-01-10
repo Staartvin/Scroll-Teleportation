@@ -20,12 +20,12 @@ import org.bukkit.scheduler.BukkitTask;
 import java.util.Arrays;
 import java.util.List;
 
-public class PlayerInteractListener implements Listener {
+public class ActivateScrollListener implements Listener {
 
     private ScrollTeleportation plugin;
     private List<Material> ignoredBlocks;
 
-    public PlayerInteractListener(ScrollTeleportation instance) {
+    public ActivateScrollListener(ScrollTeleportation instance) {
         plugin = instance;
 
         // Create list of ignored blocks
@@ -81,6 +81,7 @@ public class PlayerInteractListener implements Listener {
             // When clicking an ignored block, don't count it as a click.
             if (event.getAction() == Action.RIGHT_CLICK_BLOCK) {
                 Material clickedBlock = event.getClickedBlock().getType();
+
                 // TODO: Find a way to ignore when clicking on a door with a scroll
 //				if (ignoredBlocks.contains(clickedBlock))
 //					return;
