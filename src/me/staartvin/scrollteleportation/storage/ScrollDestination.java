@@ -13,17 +13,12 @@ import java.util.Random;
 
 public class ScrollDestination {
 
-    public enum DestinationType {FIXED_LOCATION, RANDOM, RANDOM_IN_RANGE, FIXED_NAME}
-
     @NotNull
     private DestinationType destinationType = null;
-
     // Depending on the destination type, this variable is set.
     private Location location = null;
-
     // If the destination type is RANDOM_IN_RANGE, this variable is used to determine the radius of the range.
     private int rangeRadius = 5;
-
     // The original string used to determine the location.
     private String locationString = null;
 
@@ -41,6 +36,7 @@ public class ScrollDestination {
                 destination.setDestinationType(DestinationType.RANDOM);
             } else { // It must be a name
                 destination.setDestinationType(DestinationType.FIXED_NAME);
+                destination.setupFixedNameLocation(locationString);
             }
         } else {
             // It can either random radius or a fixed location
@@ -58,6 +54,10 @@ public class ScrollDestination {
         destination.locationString = locationString.trim();
 
         return destination;
+    }
+
+    private static String locationToString(Location location) {
+        return location.getBlockX() + ", " + location.getBlockY() + ", " + location.getBlockZ() + " on world " + location.getWorld().getName();
     }
 
     public Location getLocation() throws DestinationInvalidException {
@@ -182,21 +182,18 @@ public class ScrollDestination {
                 Integer.parseInt(y), Integer.parseInt(z));
     }
 
-    private Location getFixedNameLocation()
-            throws DestinationInvalidException {
-
+    private void setupFixedNameLocation(String locationString) throws DestinationInvalidException {
         if (locationString == null) {
             throw new DestinationInvalidException("There is no name specified for the destination!");
         }
 
-        if (this.locationString.equalsIgnoreCase("spawn")) {
+        if (locationString.contains("spawn")) {
 
-            String[] params = this.locationString.split(" ");
+            String[] params = locationString.split(" ");
 
             if (params.length < 2) {
                 throw new DestinationInvalidException("The destination name '" + locationString + "' did not specify " +
-                        "a " +
-                        "world!");
+                        "a world!");
             }
 
             String worldName = params[1];
@@ -207,12 +204,18 @@ public class ScrollDestination {
                 throw new DestinationInvalidException("World '" + worldName + "' does not exist!");
             }
 
-            return world.getSpawnLocation();
+            this.location = world.getSpawnLocation();
+
+            return;
         }
 
+        throw new DestinationInvalidException("Fixed name '" + locationString + "' unknown!");
 
-        throw new DestinationInvalidException("Fixed name '" + this.locationString + "' unknown!");
+    }
 
+    private Location getFixedNameLocation()
+            throws DestinationInvalidException {
+        return location;
     }
 
     private Location getRandomLocation()
@@ -223,10 +226,7 @@ public class ScrollDestination {
         World world;
 
         // Will it be a positive or negative number
-        if (random > 0.45D)
-            above = true;
-        else
-            above = false;
+        above = random > 0.45D;
 
         x = getRandomNumberRange(1, 10000);
         y = getRandomNumberRange(1, 250);
@@ -350,7 +350,5 @@ public class ScrollDestination {
         return "within " + rangeRadius + " meters around " + locationToString(location);
     }
 
-    private static String locationToString(Location location) {
-        return location.getBlockX() + ", " + location.getBlockY() + ", " + location.getBlockZ() + " on world " + location.getWorld().getName();
-    }
+    public enum DestinationType {FIXED_LOCATION, RANDOM, RANDOM_IN_RANGE, FIXED_NAME}
 }

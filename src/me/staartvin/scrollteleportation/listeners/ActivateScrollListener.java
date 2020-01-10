@@ -2,6 +2,7 @@ package me.staartvin.scrollteleportation.listeners;
 
 import me.staartvin.scrollteleportation.ScrollTeleportation;
 import me.staartvin.scrollteleportation.exceptions.DestinationInvalidException;
+import me.staartvin.scrollteleportation.files.LanguageString;
 import me.staartvin.scrollteleportation.storage.Scroll;
 import me.staartvin.scrollteleportation.tasks.TeleportRunnable;
 import org.bukkit.ChatColor;
@@ -118,7 +119,7 @@ public class ActivateScrollListener implements Listener {
             }
 
             if (!player.hasPermission("scrollteleportation.teleport")) {
-                player.sendMessage(ChatColor.RED + "You are not allowed to use scrolls!");
+                player.sendMessage(plugin.getMainConfig().getTranslatableMessage(LanguageString.NOT_ALLOWED_TO_USE_SCROLL));
                 return;
             }
             Location destination = null;
@@ -137,15 +138,15 @@ public class ActivateScrollListener implements Listener {
 
             if (!player.hasPermission("scrollteleportation.delaybypass")) {
                 // Inform player that he is going to be teleported.
-                player.sendMessage(plugin.getMainConfig().getCastMessage().replace("%time%", delay + ""));
+                player.sendMessage(plugin.getMainConfig().getTranslatableMessage(LanguageString.TELEPORTING_IN_TIME).replace("%time%", delay + ""));
             }
 
             // Set player ready to be teleported
             plugin.getTeleportHandler().setReady(player.getName(), true);
 
-            if (scroll.isCancelledOnMove() && !player.hasPermission("scrollteleportationt.walkbypass")) {
+            if (scroll.isCancelledOnMove() && !player.hasPermission("scrollteleportation.walkbypass")) {
                 // Send warning
-                player.sendMessage(plugin.getMainConfig().getMoveWarningMessage());
+                player.sendMessage(plugin.getMainConfig().getTranslatableMessage(LanguageString.MOVEMENT_WARNING));
             }
 
             if (!player.hasPermission("scrollteleportation.delaybypass")) {

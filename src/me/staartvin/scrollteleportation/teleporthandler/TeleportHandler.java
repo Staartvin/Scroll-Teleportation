@@ -1,6 +1,7 @@
 package me.staartvin.scrollteleportation.teleporthandler;
 
 import me.staartvin.scrollteleportation.ScrollTeleportation;
+import me.staartvin.scrollteleportation.files.LanguageString;
 import me.staartvin.scrollteleportation.storage.Scroll;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -49,7 +50,7 @@ public class TeleportHandler {
             plugin.getTeleportHandler().setReady(player.getName(), false);
 
             // Send message
-            player.sendMessage(plugin.getMainConfig().getTeleportMessage());
+            player.sendMessage(plugin.getMainConfig().getTranslatableMessage(LanguageString.COMMENCING_TELEPORT));
 
             // Decrease use
             decreaseUse(item, player);
@@ -57,7 +58,14 @@ public class TeleportHandler {
             if (player.hasPermission("scrollteleportation.potioneffectbypass")) return;
 
             // Play effects (if present)
-            plugin.getScrollStorage().getScrollByItemStack(item).ifPresent(scroll -> scroll.applyEffects(player));
+            plugin.getScrollStorage().getScrollByItemStack(item).ifPresent(scroll -> {
+                scroll.applyEffects(player);
+
+                if (scroll.getEffects().size() > 0) {
+                    player.sendMessage(plugin.getMainConfig().getTranslatableMessage(LanguageString.POTION_EFFECTS_APPLIED));
+                }
+
+            });
         }
     }
 
