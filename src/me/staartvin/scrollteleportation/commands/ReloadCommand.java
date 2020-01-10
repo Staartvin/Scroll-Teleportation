@@ -27,9 +27,14 @@ public class ReloadCommand implements CommandExecutor, TabCompleter {
 				return true;
 			}
 
+			// Reload the config
 			plugin.getMainConfig().reload();
+
+			// Reload the scrolls
+			plugin.getScrollStorage().loadScrollsFromConfig();
+
 			
-			sender.sendMessage(ChatColor.GREEN + "Scroll Teleportation reloaded!");
+			sender.sendMessage(ChatColor.GREEN + "Configuration file reloaded!");
 			return true;
 		}
 		
