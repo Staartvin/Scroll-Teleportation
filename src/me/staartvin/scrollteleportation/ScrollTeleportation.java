@@ -2,12 +2,11 @@ package me.staartvin.scrollteleportation;
 
 import me.staartvin.scrollteleportation.commands.CommandHandler;
 import me.staartvin.scrollteleportation.files.MainConfig;
-import me.staartvin.scrollteleportation.listeners.PlayerInteractListener;
+import me.staartvin.scrollteleportation.listeners.ActivateScrollListener;
 import me.staartvin.scrollteleportation.listeners.PlayerInvOpenListener;
 import me.staartvin.scrollteleportation.listeners.PlayerMoveListener;
 import me.staartvin.scrollteleportation.storage.ScrollStorage;
 import me.staartvin.scrollteleportation.teleporthandler.TeleportHandler;
-
 import org.bukkit.plugin.java.JavaPlugin;
 
 /**
@@ -25,19 +24,21 @@ public class ScrollTeleportation extends JavaPlugin {
 	private ScrollStorage scrollStorage = new ScrollStorage(this);
 	
 	public void onEnable() {
-		// Load configuration file
-		config.loadConfiguration();
+        // Load configuration file
+        config.loadConfiguration();
 
-		scrollStorage.loadScrollsFromConfig();
-		
-		// Register listeners
-		registerListeners();
-		
-		// Register command
-		getCommand("scroll").setExecutor(new CommandHandler(this));
-		
-		getLogger().info("Scroll Teleportation v" + getDescription().getVersion() + " has been enabled.");
-	}
+        scrollStorage.loadScrollsFromConfig();
+
+        // Register listeners
+        registerListeners();
+
+        // Register command
+        getCommand("scroll").setExecutor(new CommandHandler(this));
+
+        getLogger().info("Loaded " + scrollStorage.getLoadedScrolls().size() + " scrolls!");
+
+        getLogger().info("Scroll Teleportation v" + getDescription().getVersion() + " has been enabled.");
+    }
 	
 	public void onDisable() {
 		
@@ -48,10 +49,10 @@ public class ScrollTeleportation extends JavaPlugin {
 	}
 	
 	private void registerListeners() {
-		getServer().getPluginManager().registerEvents(new PlayerInteractListener(this), this);
-		getServer().getPluginManager().registerEvents(new PlayerMoveListener(this), this);
-		getServer().getPluginManager().registerEvents(new PlayerInvOpenListener(this), this);
-	}
+        getServer().getPluginManager().registerEvents(new ActivateScrollListener(this), this);
+        getServer().getPluginManager().registerEvents(new PlayerMoveListener(this), this);
+        getServer().getPluginManager().registerEvents(new PlayerInvOpenListener(this), this);
+    }
 	
 	public MainConfig getMainConfig() {
 		return config;
