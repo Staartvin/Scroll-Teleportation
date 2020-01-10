@@ -34,9 +34,7 @@ public class TeleportHandler {
                 readyToBeTeleported.add(playerName);
             }
         } else {
-            if (readyToBeTeleported.contains(playerName)) {
-                readyToBeTeleported.remove(playerName);
-            }
+            readyToBeTeleported.remove(playerName);
         }
     }
 
@@ -75,6 +73,7 @@ public class TeleportHandler {
 
         NamespacedKey key = new NamespacedKey(plugin, Scroll.KEY_TOTAL_USES);
 
+        // Find the uses that are stored in the item stack.
         int currentUses = item.getItemMeta().getPersistentDataContainer().get(key,
                 PersistentDataType.INTEGER);
 
@@ -85,22 +84,41 @@ public class TeleportHandler {
             return;
         }
 
-        if (currentUses == 1) {
-            // Remove item because it was last use
-            player.getInventory().remove(item);
+        if (currentUses == 1 || currentUses == 0) {
 
-            return;
+            // If we have more than one scroll in this itemstack
+            if (item.getAmount() != 1) {
+                // Decrease amount by 1
+                item.setAmount(item.getAmount() - 1);
+
+                Scroll scroll = plugin.getScrollStorage().getScrollByItemStack(item).orElse(null);
+
+                // Since we have used up one scroll, we reset the uses back to the total uses.
+                if (scroll == null) {
+                    currentUses = 1;
+                } else {
+                    currentUses = scroll.getUses() + 1;
+                }
+
+
+            } else { // This is the last item
+                // Remove item because it was last use
+                player.getInventory().remove(item);
+
+                return;
+            }
         }
 
-        // Remove it first, then give it back
-        player.getInventory().remove(item);
 
         // Remove a use
         currentUses = currentUses - 1;
 
-		String uses = ChatColor.GREEN + "Uses: " + currentUses;
+        // Store updated uses in tag.
+        im.getPersistentDataContainer().set(key, PersistentDataType.INTEGER, currentUses);
 
-		List<String> lore = im.getLore();
+        String uses = ChatColor.GREEN + "Uses: " + currentUses;
+
+        List<String> lore = im.getLore();
 
         // Change use (Set last lore to uses)
         lore.set(lore.size() - 1, uses);
@@ -110,9 +128,6 @@ public class TeleportHandler {
 
         // Save item
         item.setItemMeta(im);
-
-        // Give new item back (1 less use)
-        player.getInventory().addItem(item);
 
     }
 }
