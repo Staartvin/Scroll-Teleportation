@@ -11,6 +11,8 @@ import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class SetCommand implements CommandExecutor, TabCompleter {
 
@@ -46,7 +48,7 @@ public class SetCommand implements CommandExecutor, TabCompleter {
 				return true;
 			}
 
-			List<String> resultList = new ArrayList<String>();
+			List<String> resultList = new ArrayList<>();
 
 			// Fill result list
 			for (int i=0;i<args.length;i++) {
@@ -67,7 +69,7 @@ public class SetCommand implements CommandExecutor, TabCompleter {
 				sender.sendMessage(ChatColor.GREEN + "Set name of " + scroll + " to " + ChatColor.GOLD + result);
 				return true;
 			} else if (variable.equalsIgnoreCase("delay")) {
-				int delay = 1;
+				int delay;
 				
 				try {
 					delay = Integer.parseInt(result);
@@ -81,7 +83,7 @@ public class SetCommand implements CommandExecutor, TabCompleter {
 				sender.sendMessage(ChatColor.GREEN + "Set delay of " + scroll + " to " + ChatColor.GOLD + result + ChatColor.GREEN + " seconds");
 				return true;
 			} else if (variable.equalsIgnoreCase("uses")) {
-				int uses = 1;
+				int uses;
 				
 				try {
 					uses = Integer.parseInt(result);
@@ -141,19 +143,25 @@ public class SetCommand implements CommandExecutor, TabCompleter {
 	}
 
 	private String convertToString(List<String> list) {
-		StringBuilder stringBuilder = new StringBuilder("");
+		StringBuilder stringBuilder = new StringBuilder();
 		
 		for (String entry: list) {
-			stringBuilder.append(entry + " ");
+			stringBuilder.append(entry).append(" ");
 		}
-		String returnString = stringBuilder.toString().trim();
-		
-		
-		return returnString;
+
+
+		return stringBuilder.toString().trim();
 	}
 
 	@Override
 	public List<String> onTabComplete(CommandSender commandSender, Command command, String s, String[] strings) {
+		if (strings.length == 2) {
+			return Stream.of("name", "delay", "uses", "destination_hidden", "destination", "cancel_on_move").filter(option -> option.toLowerCase().startsWith(strings[1].toLowerCase())).collect(Collectors.toList());
+		} else if (strings.length == 3) {
+			return plugin.getScrollStorage().getLoadedScrolls().stream().map(Scroll::getInternalName)
+					.filter(scrollName -> scrollName.toLowerCase().startsWith(strings[2].trim().toLowerCase())).collect(Collectors.toList());
+		}
+
 		return null;
 	}
 }
